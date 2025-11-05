@@ -36,3 +36,9 @@ attached_assets/
 # Logs
 logs/
 api/logs/
+
+# Private data - NEVER commit these sensitive files
+private/
+private/*.json
+*.env
+.env.*
