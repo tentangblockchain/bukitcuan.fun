@@ -2005,6 +2005,127 @@ const displayCheckAllResults = async (ctx, allResults, currentPage, totalPages, 
   }
 };
 
+// Function to EDIT existing checkall message (for pagination)
+const displayCheckAllResultsEdit = async (ctx, allResults, currentPage, totalPages, itemsPerPage) => {
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentResults = allResults.slice(startIndex, endIndex);
+
+  // Enhanced summary
+  const summary = {
+    up: allResults.filter(r => r.status === 'up').length,
+    blocked: allResults.filter(r => r.status === 'blocked').length,
+    timeout: allResults.filter(r => r.status === 'timeout').length,
+    dns_error: allResults.filter(r => r.status === 'dns_error').length,
+    ssl_error: allResults.filter(r => r.status === 'ssl_error').length,
+    other: allResults.filter(r => !['up', 'blocked', 'timeout', 'dns_error', 'ssl_error'].includes(r.status)).length
+  };
+
+  let summaryMsg = `📊 *Status Overview (${currentPage}/${totalPages})*\n\n`;
+  summaryMsg += `✅ Online: ${summary.up} | ❌ Issues: ${allResults.length - summary.up}\n`;
+  if (summary.blocked > 0) summaryMsg += `🚫 Blocked: ${summary.blocked} `;
+  if (summary.timeout > 0) summaryMsg += `⏰ Timeout: ${summary.timeout} `;
+  if (summary.dns_error > 0) summaryMsg += `🌐 DNS: ${summary.dns_error} `;
+  if (summary.ssl_error > 0) summaryMsg += `🔒 SSL: ${summary.ssl_error}`;
+  summaryMsg += `\n\n`;
+
+  // Display current page results
+  let charCount = summaryMsg.length;
+  const maxChars = 3800;
+
+  for (let index = 0; index < currentResults.length; index++) {
+    const result = currentResults[index];
+    const globalIndex = startIndex + index + 1;
+
+    let statusEmoji;
+    switch (result.status) {
+      case 'up': statusEmoji = '✅'; break;
+      case 'blocked': statusEmoji = '🚫'; break;
+      case 'redirect': statusEmoji = '↗️'; break;
+      case 'timeout': statusEmoji = '⏰'; break;
+      case 'dns_error': statusEmoji = '🌐'; break;
+      case 'ssl_error': statusEmoji = '🔒'; break;
+      default: statusEmoji = '❌';
+    }
+
+    // Enhanced URL display dengan truncation
+    let displayUrl = result.url;
+    if (displayUrl.length > 45) {
+      displayUrl = displayUrl.substring(0, 42) + '...';
+    }
+
+    let itemText = `${globalIndex}. ${statusEmoji} <code>!edit ${result.name}</code>\n`;
+    itemText += `   📱 <a href="${result.url}">${displayUrl}</a>\n`;
+    itemText += `   ⏱️ ${result.responseTime ? result.responseTime + 'ms' : 'N/A'} - ${result.statusCode || 'N/A'}`;
+
+    if (result.error && result.status !== 'up') {
+      let errorMsg = result.error;
+      if (errorMsg.length > 40) {
+        errorMsg = errorMsg.substring(0, 37) + '...';
+      }
+      itemText += `\n   ⚠️ ${errorMsg}`;
+    }
+    itemText += `\n\n`;
+
+    if (charCount + itemText.length > maxChars) {
+      summaryMsg += `... dan ${currentResults.length - index} lainnya\n\n`;
+      break;
+    }
+
+    summaryMsg += itemText;
+    charCount += itemText.length;
+  }
+
+  const timestamp = allResults[0]?.timestamp || formatTimeString();
+  summaryMsg += `🕐 *Checked:* ${timestamp}\n`;
+  summaryMsg += `💾 *Results: check_results.json*`;
+
+  // Enhanced keyboard
+  const keyboard = [];
+  const navigationRow = [];
+
+  if (currentPage > 1) {
+    navigationRow.push({
+      text: '⬅️ Previous',
+      callback_data: `checkall_page_${currentPage - 1}`
+    });
+  }
+
+  navigationRow.push({
+    text: `${currentPage}/${totalPages}`,
+    callback_data: 'page_info'
+  });
+
+  if (currentPage < totalPages) {
+    navigationRow.push({
+      text: 'Next ➡️',
+      callback_data: `checkall_page_${currentPage + 1}`
+    });
+  }
+
+  if (navigationRow.length > 0) {
+    keyboard.push(navigationRow);
+  }
+
+  keyboard.push([{
+    text: '🔄 Check Fresh',
+    callback_data: 'checkall_refresh'
+  }]);
+
+  const replyMarkup = { inline_keyboard: keyboard };
+
+  try {
+    // EDIT existing message instead of sending new one
+    await ctx.editMessageText(summaryMsg, { 
+      parse_mode: 'HTML',
+      reply_markup: replyMarkup,
+      disable_web_page_preview: true
+    });
+  } catch (error) {
+    logger.error('❌ Error editing checkall results:', error.message);
+  }
+};
+
 // Enhanced callback query handler
 bot.on('callback_query', authorize, async (ctx) => {
   try {
@@ -2013,9 +2134,69 @@ bot.on('callback_query', authorize, async (ctx) => {
 
     if (data.startsWith('list_page_')) {
       const page = parseInt(data.replace('list_page_', ''));
-      await handleListCommand(ctx, page);
-      await ctx.editMessageReplyMarkup();
-      ctx.answerCbQuery();
+      
+      // Get updated list content
+      const config = loadConfig();
+      const websites = Object.entries(config.websites);
+
+      if (websites.length === 0) {
+        await ctx.answerCbQuery('Belum ada website yang dipantau.');
+        return;
+      }
+
+      const itemsPerPage = 10;
+      const totalPages = Math.ceil(websites.length / itemsPerPage);
+      const currentPage = Math.max(1, Math.min(page, totalPages));
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const currentItems = websites.slice(startIndex, endIndex);
+
+      let listMsg = `📋 *Daftar Website (${websites.length})*\n\n`;
+
+      currentItems.forEach(([name, url], index) => {
+        const globalIndex = startIndex + index + 1;
+        const displayUrl = url.length > 60 ? url.substring(0, 57) + '...' : url;
+        listMsg += `${globalIndex}. \`${name}\`\n   \`${displayUrl}\`\n\n`;
+      });
+
+      listMsg += `💡 Gunakan \`!check\` <nama> untuk mengecek status tertentu`;
+
+      // Create inline keyboard
+      const keyboard = [];
+      const navigationRow = [];
+
+      if (currentPage > 1) {
+        navigationRow.push({
+          text: '⬅️ Sebelumnya',
+          callback_data: `list_page_${currentPage - 1}`
+        });
+      }
+
+      navigationRow.push({
+        text: `${currentPage}/${totalPages}`,
+        callback_data: 'page_info'
+      });
+
+      if (currentPage < totalPages) {
+        navigationRow.push({
+          text: 'Selanjutnya ➡️',
+          callback_data: `list_page_${currentPage + 1}`
+        });
+      }
+
+      if (navigationRow.length > 0) {
+        keyboard.push(navigationRow);
+      }
+
+      const replyMarkup = keyboard.length > 0 ? { inline_keyboard: keyboard } : undefined;
+
+      // Edit the existing message instead of sending new one
+      await ctx.editMessageText(listMsg, { 
+        parse_mode: 'Markdown',
+        reply_markup: replyMarkup 
+      });
+      
+      await ctx.answerCbQuery();
     } else if (data.startsWith('checkall_page_')) {
       const page = parseInt(data.replace('checkall_page_', ''));
 
@@ -2025,11 +2206,11 @@ bot.on('callback_query', authorize, async (ctx) => {
         const itemsPerPage = 10;
         const totalPages = Math.ceil(websites.length / itemsPerPage);
 
-        await displayCheckAllResults(ctx, checkAllCache.results, page, totalPages, itemsPerPage);
+        await displayCheckAllResultsEdit(ctx, checkAllCache.results, page, totalPages, itemsPerPage);
       } else {
         await handleCheckAllCommand(ctx, page);
       }
-      ctx.answerCbQuery();
+      await ctx.answerCbQuery();
     } else if (data === 'checkall_refresh') {
       await ctx.answerCbQuery('🔄 Starting fresh check...');
       await handleCheckAllCommand(ctx, 1, true);
