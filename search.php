@@ -19,7 +19,7 @@ if (strlen($query_raw) > 200) {
 
 $query_display = htmlspecialchars($query_raw, ENT_QUOTES, 'UTF-8');
 $google_url = 'https://www.google.com/search?q=' . urlencode($query_raw . ' jewelry perhiasan');
-$page_title = 'Mencari: ' . $query_display . ' - LuxeGems';
+$page_title = 'Mencari: ' . $query_display . ' - BukitCuan';
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -335,7 +335,7 @@ $page_title = 'Mencari: ' . $query_display . ' - LuxeGems';
 <body>
     <div class="container">
         <div class="logo" role="img" aria-label="Diamond">💎</div>
-        <h1>LuxeGems</h1>
+        <h1>BukitCuan</h1>
         
         <div class="search-query">
             Mencari: <strong><?php echo $query_display; ?></strong>
@@ -377,7 +377,7 @@ $page_title = 'Mencari: ' . $query_display . ' - LuxeGems';
         <div class="back-link">
             <a href="index.html">
                 <span>←</span>
-                <span>Kembali ke LuxeGems</span>
+                <span>Kembali ke BukitCuan</span>
             </a>
         </div>
 
