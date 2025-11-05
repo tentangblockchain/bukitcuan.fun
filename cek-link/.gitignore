@@ -1,16 +1,15 @@
-# Environment variables
+# Environment & Secrets - NEVER commit these
 .env
+.env.local
+.env.*.local
 
-# Sensitive files - NEVER commit these
+# Private data - NEVER commit these sensitive files
 private/
-
-# Sensitive JSON files only (bukan semua!)
 private/*.json
 
-# node_modules
+# Dependencies
 node_modules/
-attached_assets/
-replit.md
+package-lock.json
 
 # Logs
 logs/
@@ -18,29 +17,12 @@ logs/
 npm-debug.log*
 yarn-error.log*
 
-# Backup files
+# Temporary files
+*.tmp
+*.temp
+*.bak
 *.backup
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# IDE
-.vscode/
-.idea/
-# Environment & Config
-.env
-.env.local
-.env.*.local
-
-# Private data
-private/
-logs/
-*.log
-
-# Dependencies
-node_modules/
-package-lock.json
+~*
 
 # OS files
 .DS_Store
@@ -51,12 +33,3 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
-
-# Temporary files
-*.tmp
-*.temp
-~*
-
-# Backups
-*.bak
-*.backup
