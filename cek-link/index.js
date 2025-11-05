@@ -2273,29 +2273,46 @@ bot.on('callback_query', authorize, async (ctx) => {
     } else if (data.startsWith('checkall_page_')) {
       const page = parseInt(data.replace('checkall_page_', ''));
 
-      // CRITICAL: Try to load cache from file if memory cache is empty (after reboot)
+      // Step 1: Load cache from file if memory is empty (after restart)
       if (!checkAllCache.results || checkAllCache.results.length === 0) {
-        logger.debug('⚠️ Memory cache empty, attempting to load from file...');
-        loadCheckAllCache();
+        logger.info('⚠️ Memory cache empty, loading from file...');
+        const loaded = loadCheckAllCache();
+        
+        if (!loaded || !checkAllCache.results || checkAllCache.results.length === 0) {
+          logger.warn('❌ No cache file found or expired, need fresh check');
+          await ctx.answerCbQuery('⚠️ Cache expired, use !checkall for fresh data');
+          return;
+        }
+        
+        logger.info(`✅ Cache loaded from file: ${checkAllCache.results.length} results`);
       }
 
-      if (checkAllCache.results && checkAllCache.results.length > 0) {
+      // Step 2: Verify cache is still fresh (within 24h)
+      const now = Date.now();
+      const cacheAge = now - checkAllCache.timestamp;
+      
+      if (cacheAge > CACHE_EXPIRY) {
+        logger.warn(`⚠️ Cache expired (${Math.round(cacheAge / 1000 / 60 / 60)}h old), clearing...`);
+        checkAllCache.clear();
+        await ctx.answerCbQuery('⚠️ Cache expired (>24h), use !checkall for fresh data');
+        return;
+      }
+
+      // Step 3: Display cached results (INSTANT)
+      try {
         const config = loadConfig();
         const websites = Object.entries(config.websites);
         const itemsPerPage = 10;
         const totalPages = Math.ceil(websites.length / itemsPerPage);
 
-        try {
-          await displayCheckAllResultsEdit(ctx, checkAllCache.results, page, totalPages, itemsPerPage);
-          await ctx.answerCbQuery();
-        } catch (error) {
-          logger.error('❌ Error editing checkall pagination:', error.message);
-          await ctx.answerCbQuery('⚠️ Pesan sudah tidak valid, gunakan !checkall lagi');
-        }
-      } else {
-        // Cache benar-benar tidak ada atau expired
-        await ctx.answerCbQuery('🔄 Cache expired, checking fresh data...');
-        await handleCheckAllCommand(ctx, page);
+        await displayCheckAllResultsEdit(ctx, checkAllCache.results, page, totalPages, itemsPerPage);
+        await ctx.answerCbQuery();
+        
+        const cacheAgeMin = Math.round(cacheAge / 1000 / 60);
+        logger.info(`✅ Pagination displayed from cache (${cacheAgeMin} min old)`);
+      } catch (error) {
+        logger.error('❌ Error editing pagination:', error.message);
+        await ctx.answerCbQuery('⚠️ Pesan sudah tidak valid, gunakan !checkall lagi');
       }
     } else if (data === 'checkall_refresh') {
       await ctx.answerCbQuery('🔄 Starting fresh check...');
