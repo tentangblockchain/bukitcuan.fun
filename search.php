@@ -1,3 +1,4 @@
+
 <?php
 header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: SAMEORIGIN');
@@ -17,8 +18,8 @@ if (strlen($query_raw) > 200) {
 }
 
 $query_display = htmlspecialchars($query_raw, ENT_QUOTES, 'UTF-8');
-$google_url = 'https://www.google.com/search?q=' . urlencode($query_raw);
-$page_title = 'Mencari: ' . $query_display . ' - BukitCuan';
+$google_url = 'https://www.google.com/search?q=' . urlencode($query_raw . ' jewelry perhiasan');
+$page_title = 'Mencari: ' . $query_display . ' - LuxeGems';
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -29,9 +30,12 @@ $page_title = 'Mencari: ' . $query_display . ' - BukitCuan';
     
     <title><?php echo $page_title; ?></title>
     
-    <link rel="icon" type="image/png" sizes="32x32" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
+    <link rel="icon" type="image/png" sizes="32x32" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💎</text></svg>">
     
     <link rel="preconnect" href="https://www.google.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     
     <script async src="https://www.googletagmanager.com/gtag/js?id=VITE_GA_MEASUREMENT_ID"></script>
     <script>
@@ -56,9 +60,9 @@ $page_title = 'Mencari: ' . $query_display . ' - BukitCuan';
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #0a0f1e 0%, #1a1f3a 100%);
-            color: #fff;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            color: #f8f8f8;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -67,71 +71,102 @@ $page_title = 'Mencari: ' . $query_display . ' - BukitCuan';
             padding: 2rem;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 30% 40%, rgba(212, 175, 55, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 70% 60%, rgba(244, 228, 193, 0.08) 0%, transparent 50%);
+            animation: shimmer 8s ease-in-out infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
         }
 
         .container {
             text-align: center;
             max-width: 700px;
             width: 100%;
+            position: relative;
+            z-index: 1;
         }
 
         .logo {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            animation: bounce 1s ease-in-out infinite;
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            animation: rotate 6s linear infinite;
             user-select: none;
+            filter: drop-shadow(0 8px 24px rgba(212, 175, 55, 0.4));
         }
 
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+        @keyframes rotate {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(5deg) scale(1.05); }
+            50% { transform: rotate(0deg) scale(1); }
+            75% { transform: rotate(-5deg) scale(1.05); }
         }
 
         h1 {
-            background: linear-gradient(135deg, #14b8a6 0%, #06b6d4 100%);
+            font-family: 'Playfair Display', serif;
+            background: linear-gradient(135deg, #d4af37 0%, #f4e4c1 50%, #d4af37 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            font-size: 2rem;
-            margin-bottom: 1rem;
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            letter-spacing: 2px;
         }
 
         .search-query {
-            font-size: 1.2rem;
+            font-size: 1.25rem;
             color: #e2e8f0;
-            margin-bottom: 2rem;
-            padding: 1.5rem 2rem;
-            background: rgba(21, 27, 46, 0.6);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 16px;
+            margin-bottom: 2.5rem;
+            padding: 2rem 2.5rem;
+            background: rgba(26, 26, 26, 0.8);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border-radius: 20px;
             font-weight: 500;
             word-wrap: break-word;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(212, 175, 55, 0.3);
             box-shadow: 
-                0 8px 24px rgba(0, 0, 0, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+                0 12px 32px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(244, 228, 193, 0.1);
         }
 
         .search-query strong {
-            color: #14b8a6;
+            color: #d4af37;
             font-weight: 700;
         }
 
         .loading {
-            font-size: 1rem;
-            color: #94a3b8;
-            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            color: #b8b8b8;
+            margin-bottom: 2rem;
+            font-family: 'Inter', sans-serif;
         }
 
         .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(20, 184, 166, 0.2);
-            border-top-color: #14b8a6;
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(212, 175, 55, 0.2);
+            border-top-color: #d4af37;
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin: 1.5rem auto;
+            margin: 2rem auto;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
         }
 
         @keyframes spin {
@@ -139,53 +174,54 @@ $page_title = 'Mencari: ' . $query_display . ' - BukitCuan';
         }
 
         .ads-container {
-            margin: 2rem 0;
-            padding: 2rem;
-            background: rgba(21, 27, 46, 0.4);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            margin: 2.5rem 0;
+            padding: 2.5rem;
+            background: rgba(26, 26, 26, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(212, 175, 55, 0.15);
             min-height: 250px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
         }
 
         .ads-placeholder {
-            color: #94a3b8;
-            font-size: 0.9rem;
+            color: #b8b8b8;
+            font-size: 1rem;
             font-style: italic;
         }
 
         .ads-top {
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
             min-height: 90px;
         }
 
         .ads-bottom {
-            margin-top: 2rem;
+            margin-top: 2.5rem;
             min-height: 250px;
         }
 
         .manual-link {
-            margin-top: 2rem;
+            margin-top: 2.5rem;
         }
 
         .manual-link a {
             display: inline-block;
-            background: linear-gradient(135deg, #14b8a6 0%, #06b6d4 100%);
-            color: white;
-            padding: 1.2rem 3rem;
-            border-radius: 16px;
+            background: linear-gradient(135deg, #d4af37 0%, #f4e4c1 50%, #d4af37 100%);
+            color: #0a0a0a;
+            padding: 1.4rem 3.5rem;
+            border-radius: 50px;
             text-decoration: none;
             font-weight: 700;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             box-shadow: 
-                0 8px 24px rgba(20, 184, 166, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            letter-spacing: 0.5px;
+                0 12px 32px rgba(212, 175, 55, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            letter-spacing: 1px;
+            text-transform: uppercase;
             position: relative;
             overflow: hidden;
         }
@@ -197,8 +233,8 @@ $page_title = 'Mencari: ' . $query_display . ' - BukitCuan';
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s;
         }
 
         .manual-link a:hover::before {
@@ -206,10 +242,11 @@ $page_title = 'Mencari: ' . $query_display . ' - BukitCuan';
         }
 
         .manual-link a:hover {
-            transform: translateY(-4px) scale(1.02);
+            transform: translateY(-5px) scale(1.03);
             box-shadow: 
-                0 16px 40px rgba(20, 184, 166, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+                0 20px 48px rgba(212, 175, 55, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            filter: brightness(1.1);
         }
 
         .manual-link a:active {
@@ -217,31 +254,21 @@ $page_title = 'Mencari: ' . $query_display . ' - BukitCuan';
         }
 
         .back-link {
-            margin-top: 1.5rem;
+            margin-top: 2rem;
         }
 
         .back-link a {
-            color: #94a3b8;
+            color: #b8b8b8;
             text-decoration: none;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             transition: color 0.3s;
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.6rem;
         }
 
         .back-link a:hover {
-            color: #14b8a6;
-        }
-
-        .error-message {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            color: #fca5a5;
-            padding: 1rem 1.5rem;
-            border-radius: 12px;
-            margin: 1rem 0;
-            font-size: 0.95rem;
+            color: #d4af37;
         }
 
         @media (max-width: 768px) {
@@ -250,20 +277,20 @@ $page_title = 'Mencari: ' . $query_display . ' - BukitCuan';
             }
 
             .logo {
-                font-size: 2.5rem;
+                font-size: 3rem;
             }
 
             h1 {
-                font-size: 1.75rem;
+                font-size: 2rem;
             }
 
             .search-query {
-                font-size: 1.1rem;
-                padding: 1rem;
+                font-size: 1.15rem;
+                padding: 1.5rem 1.8rem;
             }
 
             .ads-container {
-                padding: 1.5rem;
+                padding: 2rem;
                 min-height: 200px;
             }
 
@@ -272,63 +299,62 @@ $page_title = 'Mencari: ' . $query_display . ' - BukitCuan';
             }
 
             .manual-link a {
-                padding: 0.9rem 2rem;
+                padding: 1.2rem 2.5rem;
                 font-size: 0.95rem;
             }
         }
 
         @media (max-width: 480px) {
             .search-query {
-                font-size: 1rem;
+                font-size: 1.05rem;
+                padding: 1.2rem 1.5rem;
             }
 
             .ads-container {
-                padding: 1rem;
+                padding: 1.5rem;
                 min-height: 150px;
             }
 
             .manual-link a {
                 width: 100%;
-                padding: 1rem;
+                padding: 1.2rem;
             }
         }
 
         noscript .no-js-warning {
-            background: rgba(251, 191, 36, 0.1);
-            border: 1px solid rgba(251, 191, 36, 0.3);
-            color: #fcd34d;
-            padding: 1rem 1.5rem;
-            border-radius: 12px;
-            margin: 1rem 0;
-            font-size: 0.95rem;
+            background: rgba(212, 175, 55, 0.1);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            color: #f4e4c1;
+            padding: 1.2rem 2rem;
+            border-radius: 16px;
+            margin: 1.5rem 0;
+            font-size: 1rem;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="logo" role="img" aria-label="Money Bag">💰</div>
-        <h1>BukitCuan</h1>
+        <div class="logo" role="img" aria-label="Diamond">💎</div>
+        <h1>LuxeGems</h1>
         
         <div class="search-query">
             Mencari: <strong><?php echo $query_display; ?></strong>
         </div>
 
-        <div class="loading" id="loadingText">Membuka hasil pencarian...</div>
+        <div class="loading" id="loadingText">Membuka hasil pencarian perhiasan...</div>
         <div class="spinner" id="spinner"></div>
 
         <div class="ads-container ads-top">
             <div class="ads-placeholder">
                 <!-- Paste kode iklan Google AdSense (Header Ad) di sini -->
-                <!-- Contoh: Horizontal Banner 728x90 atau Responsive -->
-                📢 Space Iklan Header
+                💎 Premium Advertising Space
             </div>
         </div>
 
         <div class="ads-container">
             <div class="ads-placeholder">
                 <!-- Paste kode iklan Google AdSense (Main Ad) di sini -->
-                <!-- Contoh: Large Rectangle 336x280 atau Responsive -->
-                📢 Space Iklan Utama
+                💎 Luxury Advertising Space
             </div>
         </div>
 
@@ -337,28 +363,27 @@ $page_title = 'Mencari: ' . $query_display . ' - BukitCuan';
                target="_blank" 
                rel="noopener noreferrer"
                id="manualLink">
-                Klik di sini jika tidak otomatis terbuka
+                Klik di sini jika tidak otomatis
             </a>
         </div>
 
         <div class="ads-container ads-bottom">
             <div class="ads-placeholder">
                 <!-- Paste kode iklan Google AdSense (Footer Ad) di sini -->
-                <!-- Contoh: Large Rectangle 336x280 atau Responsive -->
-                📢 Space Iklan Footer
+                💎 Exclusive Advertising Space
             </div>
         </div>
 
         <div class="back-link">
             <a href="index.html">
                 <span>←</span>
-                <span>Kembali ke BukitCuan</span>
+                <span>Kembali ke LuxeGems</span>
             </a>
         </div>
 
         <noscript>
             <div class="no-js-warning">
-                ⚠️ JavaScript tidak aktif. Silakan <a href="<?php echo htmlspecialchars($google_url, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener noreferrer" style="color: #fcd34d; text-decoration: underline;">klik di sini</a> untuk melanjutkan pencarian.
+                ⚠️ JavaScript tidak aktif. Silakan <a href="<?php echo htmlspecialchars($google_url, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener noreferrer" style="color: #d4af37; text-decoration: underline;">klik di sini</a> untuk melanjutkan pencarian.
             </div>
         </noscript>
     </div>

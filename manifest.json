@@ -1,21 +1,21 @@
 
 {
-  "name": "BukitCuan - Cari Cepat Dapat Untung",
-  "short_name": "BukitCuan",
-  "description": "Platform pencarian cepat untuk informasi crypto, saham, forex, investasi, dan trading",
+  "name": "LuxeGems - Perhiasan Mewah & Berkelas",
+  "short_name": "LuxeGems",
+  "description": "Koleksi perhiasan mewah berkualitas tinggi dengan desain eksklusif",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0a0f1e",
-  "theme_color": "#14b8a6",
+  "background_color": "#0a0a0a",
+  "theme_color": "#d4af37",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><text y='0.9em' font-size='400'>💰</text></svg>",
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><text y='0.9em' font-size='400'>💎</text></svg>",
       "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "any maskable"
     }
   ],
-  "categories": ["finance", "productivity"],
+  "categories": ["shopping", "lifestyle", "jewelry"],
   "lang": "id-ID"
 }

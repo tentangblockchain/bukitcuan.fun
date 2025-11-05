@@ -1,3 +1,4 @@
+
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -6,13 +7,13 @@
 
     <!-- Homepage -->
     <url>
-        <loc>https://bukitcuan.fun/</loc>
+        <loc>https://luxegems.com/</loc>
         <lastmod>2024-11-05</lastmod>
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
     </url>
     <url>
-        <loc>https://bukitcuan.fun/api/stats.php</loc>
+        <loc>https://luxegems.com/api/stats.php</loc>
         <lastmod>2024-11-05</lastmod>
         <changefreq>hourly</changefreq>
         <priority>0.3</priority>
