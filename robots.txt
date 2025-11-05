@@ -1,0 +1,11 @@
+# robots.txt for BukitCuan.fun
+
+User-agent: *
+Allow: /
+Disallow: /search.php
+
+# Sitemap
+Sitemap: https://bukitcuan.fun/sitemap.xml
+
+# Crawl-delay (optional - adjust if needed)
+# Crawl-delay: 1

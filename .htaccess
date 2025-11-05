@@ -1,0 +1,154 @@
+# BukitCuan.fun - Apache Configuration
+
+# Enable Rewrite Engine
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+    
+    # Force HTTPS (uncomment when SSL is ready)
+    # RewriteCond %{HTTPS} off
+    # RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+    
+    # Remove www (optional - uncomment if needed)
+    # RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+    # RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
+    
+    # Clean URLs - redirect .html to non-.html
+    RewriteCond %{THE_REQUEST} ^GET\ /(.+)\.html [NC]
+    RewriteRule ^(.+)\.html$ /$1 [R=301,L,NE]
+    
+    # Serve .html files when extension is omitted (except for existing files/dirs)
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME}.html -f
+    RewriteRule ^(.+)$ $1.html [L]
+    
+    # Custom 404 page (uncomment when 404.html is created)
+    # ErrorDocument 404 /404.html
+</IfModule>
+
+# Security Headers
+<IfModule mod_headers.c>
+    # Prevent MIME type sniffing
+    Header always set X-Content-Type-Options "nosniff"
+    
+    # Prevent clickjacking
+    Header always set X-Frame-Options "SAMEORIGIN"
+    
+    # XSS Protection
+    Header always set X-XSS-Protection "1; mode=block"
+    
+    # Referrer Policy
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    
+    # Remove X-Powered-By header (hide PHP version)
+    Header unset X-Powered-By
+    
+    # Permissions Policy (optional - customize as needed)
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+</IfModule>
+
+# Disable server signature
+ServerSignature Off
+
+# Compress text files for better performance
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
+</IfModule>
+
+# Browser Caching
+<IfModule mod_expires.c>
+    ExpiresActive On
+    
+    # Images
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType image/x-icon "access plus 1 year"
+    
+    # CSS, JavaScript
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType text/javascript "access plus 1 month"
+    
+    # HTML - short cache for dynamic content
+    ExpiresByType text/html "access plus 0 seconds"
+    
+    # Fonts
+    ExpiresByType font/woff2 "access plus 1 year"
+    ExpiresByType font/woff "access plus 1 year"
+    ExpiresByType font/ttf "access plus 1 year"
+    
+    # Default
+    ExpiresDefault "access plus 1 month"
+</IfModule>
+
+# Cache-Control Headers
+<IfModule mod_headers.c>
+    # No cache for HTML/PHP to ensure fresh content
+    <FilesMatch "\.(html|htm|php)$">
+        Header set Cache-Control "no-cache, no-store, must-revalidate, max-age=0"
+        Header set Pragma "no-cache"
+        Header set Expires "0"
+    </FilesMatch>
+    
+    # Cache static assets
+    <FilesMatch "\.(css|js|jpg|jpeg|png|gif|svg|webp|woff|woff2|ttf|ico)$">
+        Header set Cache-Control "public, max-age=2592000"
+    </FilesMatch>
+</IfModule>
+
+# PHP Settings
+<IfModule mod_php.c>
+    # Hide PHP version
+    php_flag expose_php Off
+    
+    # Security settings
+    php_flag display_errors Off
+    php_flag log_errors On
+    
+    # File upload limits (adjust as needed)
+    php_value upload_max_filesize 10M
+    php_value post_max_size 10M
+    
+    # Memory limit
+    php_value memory_limit 128M
+</IfModule>
+
+# Block access to sensitive files
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Protect .htaccess and .htpasswd
+<Files ~ "^\.ht">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Block access to backup and log files
+<FilesMatch "\.(bak|config|sql|log|ini|md|txt)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Allow access to robots.txt and sitemap.xml
+<FilesMatch "^(robots\.txt|sitemap\.xml)$">
+    Order allow,deny
+    Allow from all
+</FilesMatch>
+
+# Prevent directory listing
+Options -Indexes
+
+# Follow symbolic links (required for some configurations)
+Options +FollowSymLinks
+
+# Default file to serve
+DirectoryIndex index.html index.php
+
+# Character encoding
+AddDefaultCharset UTF-8
