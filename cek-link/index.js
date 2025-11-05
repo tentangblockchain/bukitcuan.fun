@@ -2,7 +2,7 @@ import { Telegraf } from 'telegraf';
 import fs from 'fs';
 import path from 'path';
 import axios from 'axios';
-import cron from 'node-schedule';
+import cron from 'node-cron';
 import dotenv from 'dotenv';
 import https from 'https';
 import dns from 'dns';
@@ -2618,7 +2618,7 @@ let checkerJob = null;
 
 const startAutomaticChecker = () => {
   if (checkerJob) {
-    checkerJob.stop(); // Use stop() instead of destroy() for node-schedule
+    checkerJob.stop();
   }
 
   // Daily check at 8 AM Jakarta time
