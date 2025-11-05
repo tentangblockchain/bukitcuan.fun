@@ -5,6 +5,38 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST');
 header('Access-Control-Allow-Headers: Content-Type');
 
+// Rate limiting: max 100 requests per IP per hour
+$rateLimit = 100;
+$rateLimitWindow = 3600; // 1 hour
+$ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+$rateLimitFile = __DIR__ . '/../logs/rate_limit_' . md5($ip) . '.json';
+
+if (file_exists($rateLimitFile)) {
+    $rateLimitData = json_decode(file_get_contents($rateLimitFile), true);
+    $requestCount = $rateLimitData['count'] ?? 0;
+    $lastReset = $rateLimitData['last_reset'] ?? 0;
+    
+    if (time() - $lastReset > $rateLimitWindow) {
+        $requestCount = 0;
+        $lastReset = time();
+    }
+    
+    if ($requestCount >= $rateLimit) {
+        http_response_code(429);
+        exit(json_encode(['error' => 'Rate limit exceeded']));
+    }
+    
+    $requestCount++;
+} else {
+    $requestCount = 1;
+    $lastReset = time();
+}
+
+file_put_contents($rateLimitFile, json_encode([
+    'count' => $requestCount,
+    'last_reset' => $lastReset
+]));
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     exit(json_encode(['error' => 'Method not allowed']));

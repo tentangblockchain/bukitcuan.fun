@@ -23,8 +23,8 @@
     RewriteCond %{REQUEST_FILENAME}.html -f
     RewriteRule ^(.+)$ $1.html [L]
     
-    # Custom 404 page (uncomment when 404.html is created)
-    # ErrorDocument 404 /404.html
+    # Custom 404 page
+    ErrorDocument 404 /404.html
 </IfModule>
 
 # Security Headers
