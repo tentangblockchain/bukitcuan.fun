@@ -2,7 +2,7 @@ import { Telegraf } from 'telegraf';
 import fs from 'fs';
 import path from 'path';
 import axios from 'axios';
-import cron from 'node-cron';
+import cron from 'node-schedule';
 import dotenv from 'dotenv';
 import https from 'https';
 import dns from 'dns';
@@ -66,16 +66,16 @@ const gradient = (text) => {
 const createBox = (content, width = 60) => {
   const lines = content.split('\n');
   const box = [];
-  
+
   box.push(theme.box.topLeft + theme.box.top.repeat(width - 2) + theme.box.topRight);
-  
+
   lines.forEach(line => {
     const padding = width - 2 - line.replace(/\u001b\[.*?m/g, '').length;
     box.push(theme.box.left + ' ' + line + ' '.repeat(padding > 0 ? padding : 0) + theme.box.right);
   });
-  
+
   box.push(theme.box.bottomLeft + theme.box.bottom.repeat(width - 2) + theme.box.bottomRight);
-  
+
   return box.join('\n');
 };
 
@@ -113,14 +113,14 @@ const logger = winston.createLogger({
             info: '📌',
             debug: '🔍'
           }[level] || '•';
-          
+
           const coloredLevel = {
             error: chalk.bold.red(level.toUpperCase()),
             warn: chalk.bold.yellow(level.toUpperCase()),
             info: chalk.bold.cyan(level.toUpperCase()),
             debug: chalk.bold.gray(level.toUpperCase())
           }[level] || level;
-          
+
           return `${chalk.gray(timestamp)} ${icon} ${coloredLevel} ${message}`;
         })
       )
@@ -291,7 +291,7 @@ const DELAY_BETWEEN_CHECKS = parseInt(process.env.DELAY_BETWEEN_CHECKS) || 3;
 const USER_AGENT = process.env.USER_AGENT || 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
 
 // Memory management untuk cache
-const CACHE_EXPIRY = 5 * 60 * 1000; // 5 menit
+const CACHE_EXPIRY = 24 * 60 * 60 * 1000; // 24 jam
 const MAX_CACHE_SIZE = 1000; // Maximum items dalam cache
 
 // Advanced uptime tracking database (in-memory)
@@ -314,17 +314,17 @@ const initUptimeTracking = (name) => {
 const updateUptimeTracking = (name, isSuccess) => {
   initUptimeTracking(name);
   const data = uptimeDatabase.get(name);
-  
+
   data.checks++;
   if (isSuccess) data.successes++;
   data.lastCheck = Date.now();
-  
+
   // Keep last 100 checks in history
   data.history.push({ timestamp: Date.now(), success: isSuccess });
   if (data.history.length > 100) {
     data.history.shift();
   }
-  
+
   uptimeDatabase.set(name, data);
 };
 
@@ -339,13 +339,13 @@ const calculateUptime = (name) => {
 const getUptimeStats = (name) => {
   const data = uptimeDatabase.get(name);
   if (!data) return null;
-  
+
   const uptime = calculateUptime(name);
   const totalTime = Date.now() - data.firstCheck;
   const avgResponseTime = data.history
     .filter(h => h.success)
     .reduce((sum, h) => sum + (h.responseTime || 0), 0) / Math.max(data.successes, 1);
-  
+
   return {
     uptime: parseFloat(uptime),
     totalChecks: data.checks,
@@ -413,14 +413,14 @@ const loadCheckAllCache = () => {
     return true;
   } catch (error) {
     logger.debug(`⚠️ Could not load cache: ${error.message}`);
-    
+
     try {
       if (fs.existsSync(CACHE_FILE_PATH)) {
         fs.unlinkSync(CACHE_FILE_PATH);
       }
     } catch (cleanupError) {
     }
-    
+
     return false;
   }
 };
@@ -440,7 +440,7 @@ let checkAllCache = {
     const after = process.memoryUsage().heapUsed;
     this.memoryUsage = before - after;
     logger.debug(`💾 Cache cleared, freed ${Math.round(this.memoryUsage / 1024 / 1024)}MB`);
-    
+
     try {
       if (fs.existsSync(CACHE_FILE_PATH)) {
         fs.unlinkSync(CACHE_FILE_PATH);
@@ -518,12 +518,12 @@ const loadConfig = () => {
     } catch (parseError) {
       // JSON parsing failed - this is critical
       logger.error(`🚨 CRITICAL: Config JSON parse failed - ${parseError.message}`);
-      
+
       // Create backup with corrupted content
       const backupPath = `${CONFIG_PATH}.corrupt.${Date.now()}`;
       fs.copyFileSync(CONFIG_PATH, backupPath);
       logger.warn(`📁 Corrupted config backed up to: ${backupPath}`);
-      
+
       // Throw error to surface to operator
       throw new Error(`Config file is corrupted! Backup saved to: ${backupPath}. Please restore manually or delete to recreate.`);
     }
@@ -723,7 +723,7 @@ const saveCheckResults = (results) => {
 // Enhanced website checker dengan retry mechanism + ora spinner
 const checkSingleUrl = async (url, name = null, retryCount = 0, showSpinner = true) => {
   const displayName = name || url;
-  
+
   let spinner = null;
   if (showSpinner) {
     spinner = ora({
@@ -759,13 +759,13 @@ const checkSingleUrl = async (url, name = null, retryCount = 0, showSpinner = tr
     // Enhanced blocking detection
     const responseText = typeof response.data === 'string' ? response.data : '';
     const finalUrl = response.request?.res?.responseUrl || response.config?.url || url;
-    
+
     // Check for redirect to blocking pages (Telkom, XL, Smartfren, Axis, etc)
     const isRedirectBlocked = finalUrl && (
       finalUrl.includes('internetpositif.id') ||
       finalUrl.includes('trustpositif.kominfo.go.id')
     );
-    
+
     // Check for blocking keywords in response
     const isContentBlocked = responseText && (
       responseText.includes('Internet Positif') ||
@@ -777,14 +777,14 @@ const checkSingleUrl = async (url, name = null, retryCount = 0, showSpinner = tr
       (response.status === 200 && responseText.length < 1000 && 
        responseText.toLowerCase().includes('block'))
     );
-    
+
     const isBlocked = isRedirectBlocked || isContentBlocked;
 
     if (isBlocked) {
       if (spinner) {
         spinner.fail(chalk.red(`${displayName} - BLOCKED! ${chalk.gray(`(${responseTime}ms)`)}`));
       }
-      
+
       // Determine blocking source
       let blockSource = 'Internet Positif / Blocked Content';
       if (isRedirectBlocked) {
@@ -794,7 +794,7 @@ const checkSingleUrl = async (url, name = null, retryCount = 0, showSpinner = tr
           blockSource = 'Blocked by Kominfo (trustpositif)';
         }
       }
-      
+
       return {
         url,
         name: displayName,
@@ -830,7 +830,7 @@ const checkSingleUrl = async (url, name = null, retryCount = 0, showSpinner = tr
 
     // Update uptime tracking
     updateUptimeTracking(displayName, overallStatus === 'up');
-    
+
     // SSL certificate check for HTTPS
     let sslInfo = null;
     if (url.startsWith('https://')) {
@@ -840,7 +840,7 @@ const checkSingleUrl = async (url, name = null, retryCount = 0, showSpinner = tr
           const validFrom = new Date(certificate.valid_from);
           const validTo = new Date(certificate.valid_to);
           const daysLeft = Math.ceil((validTo - Date.now()) / (1000 * 60 * 60 * 24));
-          
+
           sslInfo = {
             valid: true,
             validFrom: validFrom.toISOString(),
@@ -848,7 +848,7 @@ const checkSingleUrl = async (url, name = null, retryCount = 0, showSpinner = tr
             daysLeft,
             issuer: certificate.issuer?.O || 'Unknown'
           };
-          
+
           if (daysLeft < 30) {
             logger.warn(`⚠️ SSL certificate for ${displayName} expires in ${daysLeft} days`);
           }
@@ -857,7 +857,7 @@ const checkSingleUrl = async (url, name = null, retryCount = 0, showSpinner = tr
         logger.debug(`SSL info not available for ${displayName}`);
       }
     }
-    
+
     return {
       url,
       name: displayName,
@@ -911,7 +911,7 @@ const checkSingleUrl = async (url, name = null, retryCount = 0, showSpinner = tr
       errorMessage = 'SSL certificate verification failed';
     } else if (error.code === 'ERR_SSL_PROTOCOL_ERROR' || error.message.includes('SSL protocol error')) {
       errorType = 'ssl_error';
-      errorMessage = 'SSL protocol error (possible ISP blocking - Telkom/XL/Smartfren/Axis)';
+      errorMessage = 'SSL/TLS error (possible ISP blocking - Telkom/XL/Smartfren/Axis)';
     } else if (error.code === 'DEPTH_ZERO_SELF_SIGNED_CERT') {
       errorType = 'ssl_error';
       errorMessage = 'Self-signed certificate detected';
@@ -964,12 +964,12 @@ const shouldRetry = (error) => {
 // Authorization middleware - Multi-admin support
 const authorize = (ctx, next) => {
   const chatId = ctx.chat.id.toString();
-  
+
   if (!AUTHORIZED_CHAT_IDS.includes(chatId)) {
     logger.warn(`🚨 Unauthorized access attempt from chat ID: ${chatId}`);
     return ctx.reply('❌ Anda tidak memiliki akses untuk menggunakan bot ini.');
   }
-  
+
   return next();
 };
 
@@ -1062,7 +1062,7 @@ const handleCreatePhpRedirect = async (ctx, commandText) => {
     }
 
     const name = args[0];
-    
+
     // SECURITY: Sanitize input untuk mencegah path traversal
     let sanitizedName;
     try {
@@ -1130,12 +1130,12 @@ try {
 
   } catch (error) {
     logger.error(`❌ Error creating PHP redirect for ${name}: ${error.message}`, { stack: error.stack });
-    
+
     // Send user-friendly error message
     if (error.message.includes('Rate limit')) {
       return ctx.reply(`⏱️ ${error.message}`);
     }
-    
+
     ctx.reply(`❌ Gagal membuat PHP redirect untuk "${name}": ${error.message}`);
   }
 };
@@ -1246,12 +1246,12 @@ ${parsedUrl.search ? `• Query Params: \`${parsedUrl.search}\`` : ''}
 
   } catch (error) {
     logger.error(`❌ Error adding website: ${error.message}`, { stack: error.stack });
-    
+
     // Send user-friendly error message
     if (error.message.includes('Rate limit')) {
       return ctx.reply(`⏱️ ${error.message}`);
     }
-    
+
     ctx.reply(`❌ Gagal menambahkan website: ${error.message}`);
   }
 };
@@ -1384,7 +1384,7 @@ const handleEditCommand = async (ctx, commandText) => {
     if (await saveConfig(config)) {
       let changeNote = '';
       if (finalUrl !== newUrl) {
-        changeNote = `\n\n✨ *Query parameters otomatis dipertahankan:*\n• Input: \`${urlHelper.truncateUrl(newUrl, 50)}\`\n• Tersimpan: \`${urlHelper.truncateUrl(finalUrl, 50)}\``;
+        changeNote = `\n\n✨ *Query parameters otomatis dipertahankan:*\n• Input: \`${urlHelper.truncateUrl(newUrl, 45)}\`\n• Tersimpan: \`${urlHelper.truncateUrl(finalUrl, 45)}\``;
       } else if (newParsed.search && oldParsed.search && newParsed.search !== oldParsed.search) {
         changeNote = `\n\n✨ *Query parameters diperbarui:*\n• Lama: \`${oldParsed.search}\`\n• Baru: \`${newParsed.search}\``;
       } else if (newParsed.search && !oldParsed.search) {
@@ -1408,12 +1408,12 @@ const handleEditCommand = async (ctx, commandText) => {
 
   } catch (error) {
     logger.error(`❌ Error editing website: ${error.message}`, { stack: error.stack });
-    
+
     // Send user-friendly error message
     if (error.message.includes('Rate limit')) {
       return ctx.reply(`⏱️ ${error.message}`);
     }
-    
+
     ctx.reply(`❌ Gagal memperbarui website: ${error.message}`);
   }
 };
@@ -1469,12 +1469,12 @@ const handleDeleteCommand = async (ctx, commandText) => {
 
   } catch (error) {
     logger.error(`❌ Error deleting website: ${error.message}`, { stack: error.stack });
-    
+
     // Send user-friendly error message
     if (error.message.includes('Rate limit')) {
       return ctx.reply(`⏱️ ${error.message}`);
     }
-    
+
     ctx.reply(`❌ Gagal menghapus website: ${error.message}`);
   }
 };
@@ -1484,20 +1484,20 @@ const handleStatsCommand = async (ctx, commandText) => {
   try {
     const args = commandText.split(' ').slice(1);
     const config = loadConfig();
-    
+
     if (args.length === 0) {
       // Show overall stats
       const websites = Object.keys(config.websites);
-      
+
       if (websites.length === 0) {
         return ctx.reply('📝 Belum ada website yang dipantau.');
       }
-      
+
       let totalUptime = 0;
       let totalChecks = 0;
       let totalSuccess = 0;
       let monitoredCount = 0;
-      
+
       for (const name of websites) {
         const stats = getUptimeStats(name);
         if (stats) {
@@ -1507,9 +1507,9 @@ const handleStatsCommand = async (ctx, commandText) => {
           monitoredCount++;
         }
       }
-      
+
       const avgUptime = monitoredCount > 0 ? (totalUptime / monitoredCount).toFixed(2) : 0;
-      
+
       let statsMsg = `📊 *Overall Statistics*\n\n`;
       statsMsg += `🌐 Total Websites: ${websites.length}\n`;
       statsMsg += `📈 Monitored: ${monitoredCount}\n`;
@@ -1518,23 +1518,23 @@ const handleStatsCommand = async (ctx, commandText) => {
       statsMsg += `✔️ Successful: ${totalSuccess}\n`;
       statsMsg += `❌ Failed: ${totalChecks - totalSuccess}\n\n`;
       statsMsg += `💡 Use \`!stats <name>\` for detailed website stats`;
-      
+
       return ctx.replyWithMarkdown(statsMsg);
     }
-    
+
     // Show specific website stats
     const name = args[0];
-    
+
     if (!config.websites[name]) {
       return ctx.reply(`❌ Website "${name}" tidak ditemukan!`);
     }
-    
+
     const stats = getUptimeStats(name);
-    
+
     if (!stats) {
       return ctx.reply(`📊 Belum ada data untuk "${name}".\nLakukan !check ${name} untuk mulai monitoring.`);
     }
-    
+
     let detailMsg = `📊 *Statistics: ${name}*\n\n`;
     detailMsg += `✅ *Uptime:* ${stats.uptime}%\n`;
     detailMsg += `🔍 *Total Checks:* ${stats.totalChecks}\n`;
@@ -1544,9 +1544,9 @@ const handleStatsCommand = async (ctx, commandText) => {
     detailMsg += `📅 *Monitoring Since:* ${stats.monitoringSince}\n`;
     detailMsg += `🕐 *Last Check:* ${stats.lastCheck}\n\n`;
     detailMsg += `📱 *URL:* \`${config.websites[name]}\``;
-    
+
     ctx.replyWithMarkdown(detailMsg);
-    
+
   } catch (error) {
     logger.error(`❌ Error showing stats: ${error.message}`);
     ctx.reply(`❌ Gagal menampilkan statistik: ${error.message}`);
@@ -1558,11 +1558,11 @@ const handleExportCommand = async (ctx, commandText) => {
   try {
     const args = commandText.split(' ').slice(1);
     const format = args[0] || 'json';
-    
+
     if (!['json', 'csv'].includes(format.toLowerCase())) {
       return ctx.reply('❌ Format tidak valid!\nGunakan: !export json atau !export csv');
     }
-    
+
     const config = loadConfig();
     const exportData = {
       timestamp: formatTimeString(),
@@ -1573,13 +1573,13 @@ const handleExportCommand = async (ctx, commandText) => {
         avgUptime: 0
       }
     };
-    
+
     let totalUptime = 0;
     let monitoredCount = 0;
-    
+
     for (const [name, url] of Object.entries(config.websites)) {
       const stats = getUptimeStats(name);
-      
+
       if (stats) {
         exportData.websites.push({
           name,
@@ -1592,7 +1592,7 @@ const handleExportCommand = async (ctx, commandText) => {
           monitoringSince: stats.monitoringSince,
           lastCheck: stats.lastCheck
         });
-        
+
         totalUptime += stats.uptime;
         monitoredCount++;
       } else {
@@ -1609,35 +1609,35 @@ const handleExportCommand = async (ctx, commandText) => {
         });
       }
     }
-    
+
     exportData.summary.monitored = monitoredCount;
     exportData.summary.avgUptime = monitoredCount > 0 ? (totalUptime / monitoredCount).toFixed(2) : 0;
-    
+
     if (format.toLowerCase() === 'json') {
       const filename = `export_${Date.now()}.json`;
       const filepath = path.join('./logs', filename);
-      
+
       fs.writeFileSync(filepath, JSON.stringify(exportData, null, 2), 'utf-8');
-      
+
       ctx.reply(`✅ Data exported to JSON!\n📁 File: ${filename}\n💾 Location: ./logs/`);
       logger.info(`📤 Data exported to ${filepath}`);
     } else {
       // CSV format
       const filename = `export_${Date.now()}.csv`;
       const filepath = path.join('./logs', filename);
-      
+
       let csv = 'Name,URL,Uptime %,Total Checks,Successful,Failed,Avg Response (ms),Monitoring Since,Last Check\n';
-      
+
       exportData.websites.forEach(site => {
         csv += `"${site.name}","${site.url}",${site.uptime || 'N/A'},${site.totalChecks},${site.successfulChecks},${site.failedChecks},${site.avgResponseTime || 'N/A'},"${site.monitoringSince || 'N/A'}","${site.lastCheck}"\n`;
       });
-      
+
       fs.writeFileSync(filepath, csv, 'utf-8');
-      
+
       ctx.reply(`✅ Data exported to CSV!\n📁 File: ${filename}\n💾 Location: ./logs/`);
       logger.info(`📤 Data exported to ${filepath}`);
     }
-    
+
   } catch (error) {
     logger.error(`❌ Error exporting data: ${error.message}`);
     ctx.reply(`❌ Gagal export data: ${error.message}`);
@@ -1775,7 +1775,7 @@ const handleCheckAllCommand = async (ctx, page = 1, forceRecheck = false) => {
         for (const [name, url] of batch) {
           try {
             mainSpinner.text = chalk.cyan(`Checking: ${chalk.bold.white(name)} ${chalk.gray(`[${checkedCount + 1}/${websites.length}]`)}... ${chalk.yellow(Math.round((checkedCount/websites.length)*100) + '%')}`);
-            
+
             const result = await checkSingleUrl(url, name, 0, false);
             results.push(result);
             checkedCount++;
@@ -1791,7 +1791,7 @@ const handleCheckAllCommand = async (ctx, page = 1, forceRecheck = false) => {
             const statusColor = result.status === 'up' ? chalk.green : 
                                result.status === 'blocked' ? chalk.red :
                                result.status === 'timeout' ? chalk.yellow : chalk.red;
-            
+
             // Update Telegram progress
             if (loadingMsg && checkedCount % 25 === 0) {
               try {
@@ -1839,7 +1839,7 @@ const handleCheckAllCommand = async (ctx, page = 1, forceRecheck = false) => {
       // Update cache
       checkAllCache.results = results;
       checkAllCache.timestamp = now;
-      
+
       // Save cache to file for persistence
       saveCheckAllCache();
 
@@ -1861,9 +1861,13 @@ const handleCheckAllCommand = async (ctx, page = 1, forceRecheck = false) => {
     } else {
       // Use cached results
       results = checkAllCache.results;
-      const cacheAge = Math.round((now - checkAllCache.timestamp) / 1000);
+      const cacheAgeMs = now - checkAllCache.timestamp;
+      const cacheAgeHours = Math.floor(cacheAgeMs / (1000 * 60 * 60));
+      const cacheAgeMins = Math.floor((cacheAgeMs % (1000 * 60 * 60)) / (1000 * 60));
+      const cacheAgeStr = cacheAgeHours > 0 ? `${cacheAgeHours}h ${cacheAgeMins}m` : `${cacheAgeMins}m`;
+
       try {
-        await ctx.reply(`📋 Hasil dari cache (${cacheAge}s lalu)\n💡 Gunakan "🔄 Check Fresh" untuk update`);
+        await ctx.reply(`📋 Hasil dari cache (${cacheAgeStr} lalu)\n💡 Cache valid 24 jam | Gunakan "🔄 Check Fresh" untuk update`);
       } catch (cacheError) {
         logger.debug('⚠️ Skip cache message');
       }
@@ -2134,7 +2138,7 @@ bot.on('callback_query', authorize, async (ctx) => {
 
     if (data.startsWith('list_page_')) {
       const page = parseInt(data.replace('list_page_', ''));
-      
+
       // Get updated list content
       const config = loadConfig();
       const websites = Object.entries(config.websites);
@@ -2195,7 +2199,7 @@ bot.on('callback_query', authorize, async (ctx) => {
         parse_mode: 'Markdown',
         reply_markup: replyMarkup 
       });
-      
+
       await ctx.answerCbQuery();
     } else if (data.startsWith('checkall_page_')) {
       const page = parseInt(data.replace('checkall_page_', ''));
@@ -2614,7 +2618,7 @@ let checkerJob = null;
 
 const startAutomaticChecker = () => {
   if (checkerJob) {
-    checkerJob.destroy();
+    checkerJob.stop(); // Use stop() instead of destroy() for node-schedule
   }
 
   // Daily check at 8 AM Jakarta time
@@ -2624,7 +2628,7 @@ const startAutomaticChecker = () => {
     console.log('\n' + chalk.bold.magenta('━'.repeat(60)));
     console.log(gradient('  ⏰ AUTOMATIC CHECK TRIGGERED  '));
     console.log(chalk.bold.magenta('━'.repeat(60)) + '\n');
-    
+
     const autoCheckSpinner = ora({
       text: chalk.cyan('Initiating automatic website check...'),
       color: 'cyan',
@@ -2637,6 +2641,7 @@ const startAutomaticChecker = () => {
 
       if (websites.length === 0) {
         logger.info('📝 No websites to monitor');
+        autoCheckSpinner.info('No websites to monitor.');
         return;
       }
 
@@ -2651,7 +2656,7 @@ const startAutomaticChecker = () => {
       for (const [name, url] of websites) {
         try {
           autoCheckSpinner.text = chalk.cyan(`Checking: ${chalk.bold.white(name)} ${chalk.gray(`[${processedCount + 1}/${websites.length}]`)}`);
-          
+
           const result = await checkSingleUrl(url, name, 0, false);
           results.push(result);
           processedCount++;
@@ -2697,7 +2702,7 @@ const startAutomaticChecker = () => {
       // Update cache
       checkAllCache.results = results;
       checkAllCache.timestamp = Date.now();
-      
+
       // Save cache to file for persistence
       saveCheckAllCache();
 
@@ -2773,6 +2778,7 @@ const startAutomaticChecker = () => {
 
     } catch (error) {
       logger.error('❌ Auto check error:', error.message);
+      autoCheckSpinner.fail(chalk.red(`Auto check failed: ${error.message}`));
 
       // Send error notification to all authorized admins
       for (const chatId of AUTHORIZED_CHAT_IDS) {
@@ -2805,13 +2811,13 @@ const validateEnv = () => {
   // Validate chat ID format - support comma-separated IDs
   const chatIds = process.env.TELEGRAM_CHAT_ID.split(',').map(id => id.trim());
   const invalidIds = chatIds.filter(id => !/^-?\d+$/.test(id));
-  
+
   if (invalidIds.length > 0) {
     logger.error(`❌ Invalid TELEGRAM_CHAT_ID format: ${invalidIds.join(', ')}`);
     logger.info('💡 Format: single ID (123456) or comma-separated (123456,789012,345678)');
     process.exit(1);
   }
-  
+
   logger.info(`👥 Authorized admins: ${chatIds.length} chat ID(s)`);
 };
 
@@ -2825,7 +2831,7 @@ const setupGracefulShutdown = () => {
 
     // Stop cron job
     if (checkerJob) {
-      checkerJob.destroy();
+      checkerJob.stop();
       logger.info('🔄 Stopped automatic checker');
     }
 
@@ -2875,7 +2881,7 @@ process.on('unhandledRejection', (reason, promise) => {
 const main = async () => {
   try {
     showBanner();
-    
+
     const startupSpinner = ora({
       text: chalk.cyan('Initializing system...'),
       color: 'cyan',
@@ -2885,10 +2891,10 @@ const main = async () => {
     await sleep(500);
     startupSpinner.text = chalk.cyan('Validating environment...');
     validateEnv();
-    
+
     await sleep(300);
     startupSpinner.succeed(chalk.green('Environment validated'));
-    
+
     logger.info(`📡 ${chalk.bold('Node.js')} version: ${chalk.yellow(process.version)}`);
     logger.info(`💾 Memory usage: ${chalk.yellow(Math.round(process.memoryUsage().heapUsed / 1024 / 1024) + 'MB')}`);
 
@@ -2917,7 +2923,7 @@ const main = async () => {
     await bot.launch({
       dropPendingUpdates: true
     });
-    
+
     await sleep(500);
     launchSpinner.succeed(chalk.green('Bot service launched'));
 
@@ -2929,7 +2935,7 @@ const main = async () => {
     }).start();
 
     startAutomaticChecker();
-    
+
     await sleep(300);
     checkerSpinner.succeed(chalk.green('Automatic checker started (Daily @ 8 AM)'));
 
@@ -2953,14 +2959,14 @@ const main = async () => {
   } catch (error) {
     const errorSpinner = ora().fail(chalk.red.bold(`FATAL ERROR: ${error.message}`));
     logger.error('Stack:', error.stack);
-    
+
     console.log('\n' + createBox(
       chalk.red.bold('⚠️  STARTUP FAILED') + '\n\n' +
       chalk.red('Error: ') + chalk.white(error.message) + '\n\n' +
       chalk.gray('Check logs for details'),
       60
     ));
-    
+
     process.exit(1);
   }
 };
