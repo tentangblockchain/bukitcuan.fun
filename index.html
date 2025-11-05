@@ -35,9 +35,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- PWA -->
+    <!-- Manifest for backwards compatibility -->
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#d4af37">
+
 
     <!-- Google Analytics 4 -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=VITE_GA_MEASUREMENT_ID"></script>
@@ -604,12 +605,14 @@
     </footer>
 
     <script>
-        // Service Worker Registration
+        // Cleanup old service worker
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then(reg => console.log('SW registered'))
-                    .catch(err => console.log('SW registration failed'));
+            navigator.serviceWorker.register('/sw.js').then(() => {
+                navigator.serviceWorker.getRegistrations().then((registrations) => {
+                    registrations.forEach((registration) => {
+                        registration.unregister();
+                    });
+                });
             });
         }
 
@@ -623,17 +626,6 @@
                 }
             });
         });
-
-        // Track Events
-        if (typeof gtag !== 'undefined') {
-            document.querySelectorAll('.collection-card').forEach(card => {
-                card.addEventListener('click', function() {
-                    gtag('event', 'view_collection', {
-                        'collection_name': this.querySelector('h3').textContent
-                    });
-                });
-            });
-        }
     </script>
 </body>
 </html>

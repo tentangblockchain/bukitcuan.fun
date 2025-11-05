@@ -223,6 +223,30 @@ setInterval(() => {
   }
 }, 5 * 60 * 1000);
 
+// Cleanup old log files every 24 hours
+setInterval(() => {
+  try {
+    const logsDir = './logs';
+    if (!fs.existsSync(logsDir)) return;
+    
+    const files = fs.readdirSync(logsDir);
+    const now = Date.now();
+    const maxAge = 30 * 24 * 60 * 60 * 1000; // 30 days
+    
+    files.forEach(file => {
+      const filePath = path.join(logsDir, file);
+      const stats = fs.statSync(filePath);
+      
+      if (now - stats.mtime.getTime() > maxAge) {
+        fs.unlinkSync(filePath);
+        logger.info(`🧹 Cleaned up old log file: ${file}`);
+      }
+    });
+  } catch (error) {
+    logger.error('❌ Error cleaning up logs:', error.message);
+  }
+}, 24 * 60 * 60 * 1000); // Run every 24 hours
+
 logger.info('🔒 Security validation and rate limiting initialized');
 // =====================================================
 
@@ -423,11 +447,14 @@ const loadCheckAllCache = () => {
         
         if (resultsData.timestamp) {
           try {
-            // Parse format: "05/11/2025, 12:17:40 WIB"
+            // Parse format: "05/11/2025, 12:17:40 WIB" atau "05/11/2025, 12.17.40 WIB"
             const timestampStr = resultsData.timestamp.replace(' WIB', '');
             const [datePart, timePart] = timestampStr.split(', ');
             const [day, month, year] = datePart.split('/');
-            const [hour, minute, second] = timePart.split(':');
+            
+            // Support both : and . as time separator
+            const timeSeparator = timePart.includes(':') ? ':' : '.';
+            const [hour, minute, second] = timePart.split(timeSeparator);
             
             // Create Date object (month is 0-indexed in JS)
             const parsedDate = new Date(year, month - 1, day, hour, minute, second);
@@ -1999,10 +2026,7 @@ const displayCheckAllResults = async (ctx, allResults, currentPage, totalPages, 
     }
 
     // Enhanced URL display dengan truncation
-    let displayUrl = result.url;
-    if (displayUrl.length > 45) {
-      displayUrl = displayUrl.substring(0, 42) + '...';
-    }
+    const displayUrl = urlHelper.truncateUrl(result.url, 45);
 
     let itemText = `${globalIndex}. ${statusEmoji} <code>!edit ${result.name}</code>\n`;
     itemText += `   📱 <a href="${result.url}">${displayUrl}</a>\n`;
@@ -2027,8 +2051,8 @@ const displayCheckAllResults = async (ctx, allResults, currentPage, totalPages, 
   }
 
   const timestamp = allResults[0]?.timestamp || formatTimeString();
-  summaryMsg += `🕐 *Checked:* ${timestamp}\n`;
-  summaryMsg += `💾 *Results: check_results.json*`;
+  summaryMsg += `🕐 *Checked:* <code>${timestamp}</code>\n`;
+  summaryMsg += `💾 *Results:* <code>check_results.json</code>`;
 
   // Enhanced keyboard
   const keyboard = [];
@@ -2122,10 +2146,7 @@ const displayCheckAllResultsEdit = async (ctx, allResults, currentPage, totalPag
     }
 
     // Enhanced URL display dengan truncation
-    let displayUrl = result.url;
-    if (displayUrl.length > 45) {
-      displayUrl = displayUrl.substring(0, 42) + '...';
-    }
+    const displayUrl = urlHelper.truncateUrl(result.url, 45);
 
     let itemText = `${globalIndex}. ${statusEmoji} <code>!edit ${result.name}</code>\n`;
     itemText += `   📱 <a href="${result.url}">${displayUrl}</a>\n`;
@@ -2150,8 +2171,8 @@ const displayCheckAllResultsEdit = async (ctx, allResults, currentPage, totalPag
   }
 
   const timestamp = allResults[0]?.timestamp || formatTimeString();
-  summaryMsg += `🕐 *Checked:* ${timestamp}\n`;
-  summaryMsg += `💾 *Results: check_results.json*`;
+  summaryMsg += `🕐 *Checked:* <code>${timestamp}</code>\n`;
+  summaryMsg += `💾 *Results:* <code>check_results.json</code>`;
 
   // Enhanced keyboard
   const keyboard = [];

@@ -1,21 +1,9 @@
-
 {
-  "name": "BukitCuan - Toko Perhiasan Mewah",
+  "name": "BukitCuan",
   "short_name": "BukitCuan",
-  "description": "Toko perhiasan mewah dengan koleksi eksklusif cincin berlian, kalung emas, dan custom jewelry design",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0a0a0a",
   "theme_color": "#d4af37",
-  "orientation": "portrait-primary",
-  "icons": [
-    {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><text y='0.9em' font-size='400'>💎</text></svg>",
-      "sizes": "512x512",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    }
-  ],
-  "categories": ["shopping", "lifestyle", "jewelry"],
-  "lang": "id-ID"
+  "icons": []
 }
