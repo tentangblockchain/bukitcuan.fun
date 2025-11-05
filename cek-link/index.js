@@ -264,6 +264,7 @@ axios.defaults.family = 4;
 // Configuration
 const CONFIG_PATH = '../private/config.json';
 const CHECK_RESULTS_PATH = '../private/check_results.json';
+const CACHE_FILE_PATH = '../private/checkall_cache.json';
 const REDIRECT_FOLDER_BASE = '../'; // Base directory for redirect folders
 
 // Configure bot dengan IPv4 agent dan proper timeout
@@ -356,7 +357,75 @@ const getUptimeStats = (name) => {
   };
 };
 
-// Enhanced cache with memory optimization
+// Save checkAll cache to file for persistence across restarts
+const saveCheckAllCache = () => {
+  try {
+    if (!checkAllCache.results || !checkAllCache.timestamp) {
+      return false;
+    }
+
+    const privateDir = path.dirname(CACHE_FILE_PATH);
+    if (!fs.existsSync(privateDir)) {
+      fs.mkdirSync(privateDir, { recursive: true });
+    }
+
+    const cacheData = {
+      results: checkAllCache.results,
+      timestamp: checkAllCache.timestamp,
+      version: '1.0'
+    };
+
+    const tempPath = `${CACHE_FILE_PATH}.tmp`;
+    fs.writeFileSync(tempPath, JSON.stringify(cacheData, null, 2), 'utf-8');
+    fs.renameSync(tempPath, CACHE_FILE_PATH);
+
+    return true;
+  } catch (error) {
+    logger.error(`❌ Error saving checkAll cache: ${error.message}`);
+    return false;
+  }
+};
+
+// Load checkAll cache from file on startup
+const loadCheckAllCache = () => {
+  try {
+    if (!fs.existsSync(CACHE_FILE_PATH)) {
+      return false;
+    }
+
+    const raw = fs.readFileSync(CACHE_FILE_PATH, 'utf-8');
+    const cacheData = JSON.parse(raw);
+
+    const now = Date.now();
+    const cacheAge = now - cacheData.timestamp;
+
+    if (cacheAge > CACHE_EXPIRY) {
+      logger.debug('⚠️ Cache expired, skipping load');
+      fs.unlinkSync(CACHE_FILE_PATH);
+      return false;
+    }
+
+    checkAllCache.results = cacheData.results;
+    checkAllCache.timestamp = cacheData.timestamp;
+
+    const ageSeconds = Math.round(cacheAge / 1000);
+    logger.info(`✅ Loaded checkAll cache from file (${ageSeconds}s old, ${cacheData.results.length} results)`);
+    return true;
+  } catch (error) {
+    logger.debug(`⚠️ Could not load cache: ${error.message}`);
+    
+    try {
+      if (fs.existsSync(CACHE_FILE_PATH)) {
+        fs.unlinkSync(CACHE_FILE_PATH);
+      }
+    } catch (cleanupError) {
+    }
+    
+    return false;
+  }
+};
+
+// Enhanced cache with memory optimization and file persistence
 let checkAllCache = {
   results: null,
   timestamp: null,
@@ -366,11 +435,18 @@ let checkAllCache = {
     this.results = null;
     this.timestamp = null;
     if (global.gc) {
-      global.gc(); // Force garbage collection jika tersedia
+      global.gc();
     }
     const after = process.memoryUsage().heapUsed;
     this.memoryUsage = before - after;
-    logger.info(`💾 Cache cleared, freed ${Math.round(this.memoryUsage / 1024 / 1024)}MB`);
+    logger.debug(`💾 Cache cleared, freed ${Math.round(this.memoryUsage / 1024 / 1024)}MB`);
+    
+    try {
+      if (fs.existsSync(CACHE_FILE_PATH)) {
+        fs.unlinkSync(CACHE_FILE_PATH);
+      }
+    } catch (error) {
+    }
   }
 };
 
@@ -1679,13 +1755,7 @@ const handleCheckAllCommand = async (ctx, page = 1, forceRecheck = false) => {
         loadingMsg = null;
       }
 
-      console.log('\n' + createBox(
-        chalk.bold.cyan('MASS WEBSITE CHECK STARTED') + '\n' +
-        chalk.gray(`Total websites: ${websites.length}`) + '\n' +
-        chalk.gray(`Estimated time: ${Math.ceil(websites.length * (DELAY_BETWEEN_CHECKS + 3))}s`),
-        60
-      ));
-      console.log('');
+      logger.info(`🔍 Checking ${websites.length} websites...`);
 
       let checkedCount = 0;
       const batchSize = 5;
@@ -1722,10 +1792,7 @@ const handleCheckAllCommand = async (ctx, page = 1, forceRecheck = false) => {
                                result.status === 'blocked' ? chalk.red :
                                result.status === 'timeout' ? chalk.yellow : chalk.red;
             
-            console.log(`  ${statusIcon} ${statusColor(name.padEnd(25))} ${chalk.gray(result.responseTime ? `${result.responseTime}ms` : 'N/A')} ${chalk.gray(result.statusCode || '')}`);
-
-
-// Update Telegram progress
+            // Update Telegram progress
             if (loadingMsg && checkedCount % 25 === 0) {
               try {
                 const progress = Math.round(checkedCount/websites.length*100);
@@ -1736,7 +1803,7 @@ const handleCheckAllCommand = async (ctx, page = 1, forceRecheck = false) => {
                   `🔍 Progress: ${checkedCount}/${websites.length} (${progress}%)\n✅ Up: ${stats.up} | 🚫 Blocked: ${stats.blocked} | ⏰ Timeout: ${stats.timeout} | ❌ Error: ${stats.error}\n⏳ Sisa: ~${Math.ceil((websites.length - checkedCount) * 4)} detik\n\n💾 Hasil tersimpan otomatis...`
                 );
               } catch (editError) {
-                logger.info('⚠️ Skip progress update (rate limit)');
+                logger.debug('⚠️ Skip progress update (rate limit)');
                 loadingMsg = null;
               }
             }
@@ -1761,28 +1828,20 @@ const handleCheckAllCommand = async (ctx, page = 1, forceRecheck = false) => {
         }
       }
 
-      mainSpinner.succeed(chalk.green(`✨ Completed! Checked ${websites.length} websites`));
-      
-      console.log('\n' + createBox(
-        chalk.bold.green('CHECK SUMMARY') + '\n' +
-        chalk.green(`✅ Online: ${stats.up}`) + '\n' +
-        chalk.red(`🚫 Blocked: ${stats.blocked}`) + '\n' +
-        chalk.yellow(`⏰ Timeout: ${stats.timeout}`) + '\n' +
-        chalk.red(`❌ Errors: ${stats.error}`) + '\n' +
-        chalk.gray(`Total: ${websites.length} websites`),
-        60
-      ));
-      console.log('');
+      mainSpinner.succeed(chalk.green(`✨ Completed! ✅ ${stats.up} up | 🚫 ${stats.blocked} blocked | ⏰ ${stats.timeout} timeout | ❌ ${stats.error} error`));
 
       // Save results
       const saveSuccess = saveCheckResults(results);
       if (saveSuccess) {
-        logger.info('💾 Check results saved to JSON file');
+        logger.debug('💾 Check results saved to JSON file');
       }
 
       // Update cache
       checkAllCache.results = results;
       checkAllCache.timestamp = now;
+      
+      // Save cache to file for persistence
+      saveCheckAllCache();
 
       // Completion message
       try {
@@ -1795,7 +1854,7 @@ const handleCheckAllCommand = async (ctx, page = 1, forceRecheck = false) => {
           );
         }
       } catch (completionError) {
-        logger.info('⚠️ Skip completion message');
+        logger.debug('⚠️ Skip completion message');
       }
 
       await sleep(1500);
@@ -1806,7 +1865,7 @@ const handleCheckAllCommand = async (ctx, page = 1, forceRecheck = false) => {
       try {
         await ctx.reply(`📋 Hasil dari cache (${cacheAge}s lalu)\n💡 Gunakan "🔄 Check Fresh" untuk update`);
       } catch (cacheError) {
-        logger.info('⚠️ Skip cache message');
+        logger.debug('⚠️ Skip cache message');
       }
     }
 
@@ -2457,6 +2516,9 @@ const startAutomaticChecker = () => {
       // Update cache
       checkAllCache.results = results;
       checkAllCache.timestamp = Date.now();
+      
+      // Save cache to file for persistence
+      saveCheckAllCache();
 
       // Send alert for issues
       const issueResults = results.filter(r => r.status !== 'up');
@@ -2660,6 +2722,9 @@ const main = async () => {
 
     const botInfo = await bot.telegram.getMe();
     connectionSpinner.succeed(chalk.green(`Connected to Telegram: ${chalk.bold.white('@' + botInfo.username)}`));
+
+    // Load cached results from file if available
+    loadCheckAllCache();
 
     // Launch bot
     const launchSpinner = ora({
