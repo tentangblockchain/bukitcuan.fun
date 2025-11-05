@@ -98,14 +98,19 @@ $page_title = 'Mencari: ' . $query_display . ' - BukitCuan';
 
         .search-query {
             font-size: 1.2rem;
-            color: #94a3b8;
+            color: #e2e8f0;
             margin-bottom: 2rem;
-            padding: 1rem 1.5rem;
-            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem 2rem;
+            background: rgba(21, 27, 46, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border-radius: 16px;
             font-weight: 500;
             word-wrap: break-word;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 
+                0 8px 24px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
         .search-query strong {
@@ -136,13 +141,16 @@ $page_title = 'Mencari: ' . $query_display . ' - BukitCuan';
         .ads-container {
             margin: 2rem 0;
             padding: 2rem;
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(21, 27, 46, 0.4);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             min-height: 250px;
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
         }
 
         .ads-placeholder {
@@ -169,22 +177,43 @@ $page_title = 'Mencari: ' . $query_display . ' - BukitCuan';
             display: inline-block;
             background: linear-gradient(135deg, #14b8a6 0%, #06b6d4 100%);
             color: white;
-            padding: 1rem 2.5rem;
-            border-radius: 50px;
+            padding: 1.2rem 3rem;
+            border-radius: 16px;
             text-decoration: none;
             font-weight: 700;
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: 0 8px 20px rgba(20, 184, 166, 0.3);
+            box-shadow: 
+                0 8px 24px rgba(20, 184, 166, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
             letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .manual-link a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .manual-link a:hover::before {
+            left: 100%;
         }
 
         .manual-link a:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(20, 184, 166, 0.4);
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 
+                0 16px 40px rgba(20, 184, 166, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
         }
 
         .manual-link a:active {
-            transform: translateY(-1px);
+            transform: translateY(-2px) scale(0.98);
         }
 
         .back-link {
