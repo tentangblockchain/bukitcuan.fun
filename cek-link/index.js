@@ -2210,11 +2210,17 @@ bot.on('callback_query', authorize, async (ctx) => {
         const itemsPerPage = 10;
         const totalPages = Math.ceil(websites.length / itemsPerPage);
 
-        await displayCheckAllResultsEdit(ctx, checkAllCache.results, page, totalPages, itemsPerPage);
+        try {
+          await displayCheckAllResultsEdit(ctx, checkAllCache.results, page, totalPages, itemsPerPage);
+          await ctx.answerCbQuery();
+        } catch (error) {
+          logger.error('❌ Error editing checkall pagination:', error.message);
+          await ctx.answerCbQuery('⚠️ Pesan sudah tidak valid, gunakan !checkall lagi');
+        }
       } else {
+        await ctx.answerCbQuery('🔄 Memuat data...');
         await handleCheckAllCommand(ctx, page);
       }
-      await ctx.answerCbQuery();
     } else if (data === 'checkall_refresh') {
       await ctx.answerCbQuery('🔄 Starting fresh check...');
       await handleCheckAllCommand(ctx, 1, true);
