@@ -418,6 +418,40 @@ const loadCheckAllCache = () => {
 
       // Convert check_results.json format to cache format
       if (resultsData.results && typeof resultsData.results === 'object') {
+        // CRITICAL: Parse timestamp dari file untuk validasi cache expiry
+        let fileTimestamp = Date.now();
+        
+        if (resultsData.timestamp) {
+          try {
+            // Parse format: "05/11/2025, 12:17:40 WIB"
+            const timestampStr = resultsData.timestamp.replace(' WIB', '');
+            const [datePart, timePart] = timestampStr.split(', ');
+            const [day, month, year] = datePart.split('/');
+            const [hour, minute, second] = timePart.split(':');
+            
+            // Create Date object (month is 0-indexed in JS)
+            const parsedDate = new Date(year, month - 1, day, hour, minute, second);
+            
+            if (!isNaN(parsedDate.getTime())) {
+              fileTimestamp = parsedDate.getTime();
+              logger.debug(`✅ Parsed timestamp from file: ${resultsData.timestamp} -> ${fileTimestamp}`);
+            } else {
+              logger.warn('⚠️ Invalid timestamp in check_results.json, using current time');
+            }
+          } catch (parseError) {
+            logger.warn(`⚠️ Failed to parse timestamp: ${parseError.message}, using current time`);
+          }
+        }
+
+        // Check if cache is still valid (within 24h)
+        const now = Date.now();
+        const cacheAge = now - fileTimestamp;
+        
+        if (cacheAge > CACHE_EXPIRY) {
+          logger.debug(`⚠️ check_results.json is expired (${Math.round(cacheAge / 1000 / 60 / 60)}h old), skipping load`);
+          return false;
+        }
+
         const resultsArray = Object.entries(resultsData.results).map(([name, data]) => ({
           name,
           url: data.url,
@@ -429,9 +463,11 @@ const loadCheckAllCache = () => {
         }));
 
         checkAllCache.results = resultsArray;
-        checkAllCache.timestamp = Date.now(); // Use current time since check_results.json doesn't store cache timestamp
+        checkAllCache.timestamp = fileTimestamp; // ✅ Use ORIGINAL timestamp from file
 
-        logger.info(`✅ Loaded ${resultsArray.length} results from check_results.json (fallback)`);
+        const ageHours = Math.round(cacheAge / 1000 / 60 / 60);
+        const ageMins = Math.round((cacheAge % (1000 * 60 * 60)) / 1000 / 60);
+        logger.info(`✅ Loaded ${resultsArray.length} results from check_results.json (${ageHours}h ${ageMins}m old)`);
         return true;
       }
     }
