@@ -1,63 +1,45 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     <!-- Primary Meta Tags -->
-    <title>LuxeGems - Perhiasan Mewah & Berkelas</title>
-    <meta name="title" content="LuxeGems - Perhiasan Mewah & Berkelas">
-    <meta name="description" content="Koleksi perhiasan mewah berkualitas tinggi. Cincin berlian, kalung emas, anting mutiara, gelang eksklusif, dan perhiasan custom design.">
-    <meta name="keywords" content="perhiasan, jewelry, cincin berlian, kalung emas, anting mutiara, gelang, perhiasan mewah, custom jewelry, diamond ring, gold necklace">
+    <title>LuxeGems - Toko Perhiasan Mewah & Berkelas</title>
+    <meta name="title" content="LuxeGems - Toko Perhiasan Mewah & Berkelas">
+    <meta name="description" content="Toko perhiasan mewah dengan koleksi cincin berlian, kalung emas, anting mutiara, gelang eksklusif, dan custom jewelry design. Kualitas terbaik, harga terpercaya.">
+    <meta name="keywords" content="toko perhiasan, jewelry store, cincin berlian, kalung emas, anting mutiara, gelang, perhiasan mewah, custom jewelry">
     <meta name="author" content="LuxeGems">
     <meta name="robots" content="index, follow">
-    
+
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://luxegems.com/">
-    <meta property="og:title" content="LuxeGems - Perhiasan Mewah & Berkelas">
-    <meta property="og:description" content="Koleksi perhiasan mewah berkualitas tinggi dengan desain eksklusif.">
+    <meta property="og:title" content="LuxeGems - Toko Perhiasan Mewah & Berkelas">
+    <meta property="og:description" content="Toko perhiasan mewah dengan koleksi eksklusif dan layanan custom design.">
     <meta property="og:image" content="https://luxegems.com/og-image.png">
-    <meta property="og:locale" content="id_ID">
-    
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://luxegems.com/">
-    <meta property="twitter:title" content="LuxeGems - Perhiasan Mewah & Berkelas">
-    <meta property="twitter:description" content="Koleksi perhiasan mewah berkualitas tinggi dengan desain eksklusif.">
-    <meta property="twitter:image" content="https://luxegems.com/og-image.png">
-    
+
     <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="32x32" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💎</text></svg>">
-    
-    <!-- Preconnect for performance -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    
-    <!-- Canonical URL -->
-    <link rel="canonical" href="https://luxegems.com/">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     <!-- PWA -->
     <link rel="manifest" href="/manifest.json">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="LuxeGems">
-    
+    <meta name="theme-color" content="#d4af37">
+
     <!-- Google Analytics 4 -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=VITE_GA_MEASUREMENT_ID"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
-        gtag('config', 'VITE_GA_MEASUREMENT_ID', {
-            'page_title': 'Home',
-            'page_path': '/'
-        });
+        gtag('config', 'VITE_GA_MEASUREMENT_ID');
     </script>
-    
+
     <style>
         * {
             margin: 0;
@@ -69,870 +51,576 @@
             --primary: #d4af37;
             --primary-dark: #b8941f;
             --secondary: #f4e4c1;
-            --accent: #c9a961;
             --background: #0a0a0a;
             --surface: #1a1a1a;
             --text: #f8f8f8;
             --text-secondary: #b8b8b8;
-            --border: #2a2a2a;
-            --gradient: linear-gradient(135deg, #d4af37 0%, #f4e4c1 50%, #d4af37 100%);
-            --glow: rgba(212, 175, 55, 0.4);
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Inter', sans-serif;
             background: var(--background);
             color: var(--text);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
             overflow-x: hidden;
-            position: relative;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
         }
 
-        /* Elegant background with sparkle effect */
-        body::before {
-            content: '';
+        /* Header */
+        header {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 30%, rgba(212, 175, 55, 0.05) 0%, transparent 50%),
-                radial-gradient(circle at 80% 70%, rgba(244, 228, 193, 0.05) 0%, transparent 50%);
-            animation: shimmer 8s ease-in-out infinite;
-            z-index: 0;
-            pointer-events: none;
+            right: 0;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
         }
 
-        @keyframes shimmer {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 1; }
-        }
-
-        /* Diamond sparkles */
-        .sparkle {
-            position: fixed;
-            width: 4px;
-            height: 4px;
-            background: var(--primary);
-            border-radius: 50%;
-            box-shadow: 0 0 10px var(--glow);
-            animation: sparkle 3s ease-in-out infinite;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        @keyframes sparkle {
-            0%, 100% { opacity: 0; transform: scale(0); }
-            50% { opacity: 1; transform: scale(1); }
-        }
-
-        main {
-            position: relative;
-            z-index: 1;
-            flex: 1;
+        nav {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem 2rem;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            padding: 2rem;
         }
 
-        .logo-container {
-            text-align: center;
-            margin-bottom: 4rem;
-            animation: fadeInDown 1s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-40px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .logo-icon {
-            font-size: 5rem;
-            margin-bottom: 1.5rem;
-            display: inline-block;
-            animation: rotate 6s linear infinite;
-            filter: drop-shadow(0 10px 40px var(--glow));
-            user-select: none;
-        }
-
-        @keyframes rotate {
-            0%, 100% { transform: rotate(0deg) scale(1); }
-            25% { transform: rotate(5deg) scale(1.05); }
-            50% { transform: rotate(0deg) scale(1); }
-            75% { transform: rotate(-5deg) scale(1.05); }
-        }
-
-        .logo-text {
+        .nav-logo {
             font-family: 'Playfair Display', serif;
-            font-size: 4.5rem;
+            font-size: 1.8rem;
             font-weight: 900;
-            background: var(--gradient);
+            background: linear-gradient(135deg, #d4af37 0%, #f4e4c1 50%, #d4af37 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: 2px;
-            line-height: 1.2;
-            margin-bottom: 1rem;
-            text-shadow: 0 0 60px var(--glow);
-        }
-
-        .tagline {
-            font-family: 'Inter', sans-serif;
-            color: var(--text-secondary);
-            font-size: 1.3rem;
-            font-weight: 300;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-        }
-
-        .search-container {
-            width: 100%;
-            max-width: 700px;
-            animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(40px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .search-wrapper {
-            position: relative;
-            background: rgba(26, 26, 26, 0.8);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            border-radius: 50px;
-            padding: 0.8rem 2rem;
             display: flex;
             align-items: center;
-            gap: 1.5rem;
-            border: 2px solid rgba(212, 175, 55, 0.3);
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: 
-                0 8px 32px rgba(0, 0, 0, 0.5),
-                inset 0 1px 1px rgba(244, 228, 193, 0.1);
+            gap: 0.5rem;
         }
 
-        .search-wrapper:hover {
-            border-color: rgba(212, 175, 55, 0.6);
-            background: rgba(26, 26, 26, 0.9);
-            box-shadow: 
-                0 12px 48px rgba(212, 175, 55, 0.3),
-                0 0 0 1px rgba(212, 175, 55, 0.2),
-                inset 0 1px 1px rgba(244, 228, 193, 0.2);
-            transform: translateY(-2px);
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
         }
 
-        .search-wrapper:focus-within {
-            border-color: var(--primary);
-            background: rgba(26, 26, 26, 1);
-            box-shadow: 
-                0 0 0 4px rgba(212, 175, 55, 0.2),
-                0 16px 64px rgba(212, 175, 55, 0.4),
-                inset 0 1px 1px rgba(244, 228, 193, 0.3);
-            transform: translateY(-3px);
-        }
-
-        .search-icon {
-            color: var(--primary);
-            width: 28px;
-            height: 28px;
-            flex-shrink: 0;
-            transition: all 0.3s;
-        }
-
-        .search-wrapper:focus-within .search-icon {
-            color: var(--secondary);
-            filter: drop-shadow(0 0 8px var(--glow));
-        }
-
-        .search-input {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: var(--text);
-            font-size: 1.2rem;
-            outline: none;
-            padding: 1.3rem 0;
-            font-weight: 400;
-            font-family: 'Inter', sans-serif;
-        }
-
-        .search-input::placeholder {
+        .nav-links a {
             color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s;
+            font-weight: 500;
         }
 
-        .clear-btn {
-            background: rgba(212, 175, 55, 0.15);
-            border: none;
+        .nav-links a:hover {
             color: var(--primary);
-            cursor: pointer;
-            font-size: 2rem;
-            width: 40px;
-            height: 40px;
-            display: none;
+        }
+
+        .cta-btn {
+            background: linear-gradient(135deg, #d4af37 0%, #f4e4c1 50%, #d4af37 100%);
+            color: var(--background);
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.3s;
+            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(212, 175, 55, 0.5);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 50%;
-            transition: all 0.3s;
-            flex-shrink: 0;
-        }
-
-        .clear-btn.visible {
-            display: flex;
-        }
-
-        .clear-btn:hover {
-            background: rgba(212, 175, 55, 0.3);
-            color: var(--secondary);
-            transform: rotate(90deg);
-        }
-
-        .search-btn {
-            background: var(--gradient);
-            border: none;
-            color: var(--background);
-            padding: 1.1rem 3rem;
-            border-radius: 50px;
-            cursor: pointer;
-            font-size: 1.1rem;
-            font-weight: 700;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: 0 8px 24px rgba(212, 175, 55, 0.4);
-            flex-shrink: 0;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        .search-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 36px rgba(212, 175, 55, 0.6);
-            filter: brightness(1.1);
-        }
-
-        .search-btn:active {
-            transform: translateY(-1px);
-        }
-
-        .collections {
-            margin-top: 4rem;
-            animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both;
-        }
-
-        .collections-title {
-            font-family: 'Playfair Display', serif;
-            color: var(--primary);
-            font-size: 1rem;
-            margin-bottom: 2rem;
-            text-transform: uppercase;
-            letter-spacing: 4px;
             text-align: center;
-            font-weight: 600;
-        }
-
-        .collections-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 1.5rem;
-            max-width: 700px;
-        }
-
-        .collection-item {
-            background: rgba(26, 26, 26, 0.6);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            border-radius: 20px;
-            padding: 2rem 1.5rem;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            text-align: center;
+            padding: 6rem 2rem 4rem;
             position: relative;
             overflow: hidden;
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
-        .collection-item::before {
+        .hero::before {
             content: '';
             position: absolute;
             inset: 0;
-            background: var(--gradient);
-            opacity: 0;
-            transition: opacity 0.4s;
-            z-index: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
+            animation: pulse 8s ease-in-out infinite;
         }
 
-        .collection-item:hover,
-        .collection-item:active {
-            background: rgba(26, 26, 26, 0.8);
-            border-color: var(--primary);
-            transform: translateY(-10px) scale(1.03);
-            box-shadow: 0 24px 56px rgba(212, 175, 55, 0.3);
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
         }
 
-        .collection-item:hover::before,
-        .collection-item:active::before {
-            opacity: 0.08;
-        }
-
-        .collection-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
+        .hero-content {
             position: relative;
             z-index: 1;
-            filter: drop-shadow(0 4px 12px rgba(212, 175, 55, 0.3));
-            user-select: none;
+            max-width: 900px;
         }
 
-        .collection-text {
-            font-size: 1rem;
+        .hero-icon {
+            font-size: 6rem;
+            margin-bottom: 2rem;
+            filter: drop-shadow(0 10px 40px rgba(212, 175, 55, 0.4));
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 4.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #d4af37 0%, #f4e4c1 50%, #d4af37 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
             color: var(--text-secondary);
-            position: relative;
-            z-index: 1;
-            font-weight: 500;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            font-family: 'Inter', sans-serif;
+            margin-bottom: 3rem;
+            line-height: 1.8;
         }
 
-        .collection-item:hover .collection-text,
-        .collection-item:active .collection-text {
+        .hero-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary, .btn-secondary {
+            padding: 1.2rem 3rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.3s;
+            font-size: 1.1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #d4af37 0%, #f4e4c1 50%, #d4af37 100%);
+            color: var(--background);
+            box-shadow: 0 8px 30px rgba(212, 175, 55, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(212, 175, 55, 0.6);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(212, 175, 55, 0.1);
+            transform: translateY(-3px);
+        }
+
+        /* Collections Section */
+        .collections {
+            padding: 6rem 2rem;
+            background: var(--surface);
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #d4af37 0%, #f4e4c1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 4rem;
+            font-size: 1.1rem;
+        }
+
+        .collections-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .collection-card {
+            background: rgba(26, 26, 26, 0.8);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            text-align: center;
+            transition: all 0.4s;
+            cursor: pointer;
+        }
+
+        .collection-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 50px rgba(212, 175, 55, 0.3);
+        }
+
+        .collection-card .icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            filter: drop-shadow(0 5px 20px rgba(212, 175, 55, 0.3));
+        }
+
+        .collection-card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
             color: var(--primary);
         }
 
+        .collection-card p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 6rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-top: 4rem;
+        }
+
+        .feature-card {
+            text-align: center;
+        }
+
+        .feature-card .icon {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Contact Section */
+        .contact {
+            padding: 6rem 2rem;
+            background: var(--surface);
+            text-align: center;
+        }
+
+        .contact-info {
+            max-width: 600px;
+            margin: 3rem auto 0;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: rgba(26, 26, 26, 0.8);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 15px;
+            transition: all 0.3s;
+        }
+
+        .contact-item:hover {
+            border-color: var(--primary);
+            transform: translateX(10px);
+        }
+
+        .contact-item .icon {
+            font-size: 2rem;
+        }
+
+        .contact-item a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .contact-item a:hover {
+            color: var(--primary);
+        }
+
+        /* Footer */
         footer {
-            background: rgba(10, 10, 10, 0.8);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
+            background: rgba(10, 10, 10, 0.95);
             padding: 3rem 2rem;
             text-align: center;
             border-top: 1px solid rgba(212, 175, 55, 0.2);
-            position: relative;
-            z-index: 1;
-            box-shadow: 0 -4px 32px rgba(0, 0, 0, 0.4);
         }
 
         footer p {
             color: var(--text-secondary);
-            font-size: 0.95rem;
-            line-height: 2;
-            font-family: 'Inter', sans-serif;
+            margin: 0.5rem 0;
         }
 
         .footer-brand {
             font-family: 'Playfair Display', serif;
-            background: var(--gradient);
+            background: linear-gradient(135deg, #d4af37 0%, #f4e4c1 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
             font-weight: 700;
         }
 
-        @media (max-width: 768px) {
-            .logo-icon {
-                font-size: 4rem;
-            }
-
-            .logo-text {
-                font-size: 3.2rem;
-                letter-spacing: 1px;
-            }
-
-            .tagline {
-                font-size: 1rem;
-                letter-spacing: 2px;
-            }
-
-            .search-wrapper {
-                padding: 0.7rem 1.5rem;
-                gap: 1.2rem;
-            }
-
-            .search-input {
-                font-size: 1.1rem;
-                padding: 1.1rem 0;
-            }
-
-            .search-btn {
-                padding: 1rem 2.5rem;
-                font-size: 1rem;
-            }
-
-            .collections-grid {
-                grid-template-columns: repeat(4, 1fr);
-                gap: 1.2rem;
-            }
-
-            .collection-item {
-                padding: 1.5rem 1rem;
-            }
-
-            .collection-icon {
-                font-size: 2.5rem;
-            }
-
-            .collection-text {
-                font-size: 0.85rem;
-            }
-
-            main {
-                padding: 1.5rem;
-            }
-        }
-
-        .suggestions-dropdown {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: var(--surface);
-            border: 2px solid var(--primary);
-            border-radius: 24px;
-            margin-top: 0.5rem;
-            max-height: 350px;
-            overflow-y: auto;
-            z-index: 1000;
+        /* Mobile Menu */
+        .mobile-menu-btn {
             display: none;
-            box-shadow: 0 12px 48px rgba(212, 175, 55, 0.3);
-        }
-
-        .suggestions-dropdown.visible {
-            display: block;
-        }
-
-        .suggestion-item {
-            padding: 1.2rem 2rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
-            display: flex;
-            align-items: center;
-            gap: 1.2rem;
-        }
-
-        .suggestion-item:last-child {
-            border-bottom: none;
-        }
-
-        .suggestion-item:hover,
-        .suggestion-item.active {
-            background: rgba(212, 175, 55, 0.1);
+            background: none;
+            border: none;
             color: var(--primary);
+            font-size: 2rem;
+            cursor: pointer;
         }
 
-        .suggestion-icon {
-            font-size: 1.3rem;
-        }
-
-        @media (max-width: 480px) {
-            .logo-text {
-                font-size: 2.5rem;
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
             }
 
-            .search-wrapper {
-                flex-wrap: wrap;
-                padding: 1.2rem 1.5rem;
+            .mobile-menu-btn {
+                display: block;
             }
 
-            .search-input {
-                width: 100%;
+            .hero h1 {
+                font-size: 3rem;
             }
 
-            .search-btn {
-                width: 100%;
-                margin-top: 0.5rem;
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            .section-title {
+                font-size: 2.2rem;
             }
 
             .collections-grid {
-                grid-template-columns: repeat(4, 1fr);
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Decorative sparkles -->
-    <div class="sparkle" style="top: 15%; left: 10%; animation-delay: 0s;"></div>
-    <div class="sparkle" style="top: 25%; right: 15%; animation-delay: 1s;"></div>
-    <div class="sparkle" style="bottom: 30%; left: 20%; animation-delay: 2s;"></div>
-    <div class="sparkle" style="bottom: 20%; right: 25%; animation-delay: 1.5s;"></div>
-    <div class="sparkle" style="top: 50%; left: 50%; animation-delay: 0.7s;"></div>
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="nav-logo">
+                <span>💎</span>
+                <span>LuxeGems</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#home">Beranda</a></li>
+                <li><a href="#koleksi">Koleksi</a></li>
+                <li><a href="#tentang">Tentang</a></li>
+                <li><a href="#kontak">Kontak</a></li>
+            </ul>
+            <a href="#kontak" class="cta-btn">Hubungi Kami</a>
+            <button class="mobile-menu-btn">☰</button>
+        </nav>
+    </header>
 
-    <main>
-        <div class="logo-container">
-            <div class="logo-icon" role="img" aria-label="Diamond">💎</div>
-            <h1 class="logo-text">LuxeGems</h1>
-            <p class="tagline">Timeless Elegance</p>
-        </div>
-
-        <div class="search-container">
-            <form id="searchForm" role="search">
-                <div class="search-wrapper">
-                    <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
-                    <input 
-                        type="text" 
-                        class="search-input" 
-                        id="searchInput" 
-                        placeholder="Cari perhiasan impian Anda..." 
-                        autocomplete="off"
-                        aria-label="Search query"
-                        aria-autocomplete="list"
-                        aria-controls="suggestions"
-                        maxlength="200"
-                        required
-                    >
-                    <div id="suggestions" class="suggestions-dropdown" role="listbox" aria-hidden="true"></div>
-                    <button type="button" class="clear-btn" id="clearBtn" aria-label="Clear search">×</button>
-                    <button type="submit" class="search-btn">Cari</button>
-                </div>
-            </form>
-
-            <div class="collections">
-                <div class="collections-title" id="collectionsTitle">Koleksi Eksklusif</div>
-                <div class="collections-grid" id="collectionsGrid">
-                    <div class="collection-item" data-query="cincin berlian" role="button" tabindex="0">
-                        <div class="collection-icon">💍</div>
-                        <div class="collection-text">Cincin Berlian</div>
-                    </div>
-                    <div class="collection-item" data-query="kalung emas" role="button" tabindex="0">
-                        <div class="collection-icon">📿</div>
-                        <div class="collection-text">Kalung Emas</div>
-                    </div>
-                    <div class="collection-item" data-query="anting mutiara" role="button" tabindex="0">
-                        <div class="collection-icon">✨</div>
-                        <div class="collection-text">Anting Mutiara</div>
-                    </div>
-                    <div class="collection-item" data-query="gelang perak" role="button" tabindex="0">
-                        <div class="collection-icon">🔗</div>
-                        <div class="collection-text">Gelang Perak</div>
-                    </div>
-                    <div class="collection-item" data-query="jam tangan mewah" role="button" tabindex="0">
-                        <div class="collection-icon">⌚</div>
-                        <div class="collection-text">Jam Mewah</div>
-                    </div>
-                    <div class="collection-item" data-query="bros permata" role="button" tabindex="0">
-                        <div class="collection-icon">💐</div>
-                        <div class="collection-text">Bros Permata</div>
-                    </div>
-                    <div class="collection-item" data-query="tiara mahkota" role="button" tabindex="0">
-                        <div class="collection-icon">👑</div>
-                        <div class="collection-text">Tiara</div>
-                    </div>
-                    <div class="collection-item" data-query="custom jewelry" role="button" tabindex="0">
-                        <div class="collection-icon">🎨</div>
-                        <div class="collection-text">Custom</div>
-                    </div>
-                </div>
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <div class="hero-icon">💎</div>
+            <h1>Perhiasan Mewah untuk Momen Istimewa Anda</h1>
+            <p>Temukan koleksi eksklusif cincin berlian, kalung emas, anting mutiara, gelang eksklusif, dan perhiasan custom design berkualitas tinggi dengan harga terpercaya.</p>
+            <div class="hero-buttons">
+                <a href="#koleksi" class="btn-primary">Lihat Koleksi</a>
+                <a href="#kontak" class="btn-secondary">Konsultasi Gratis</a>
             </div>
         </div>
-    </main>
+    </section>
 
+    <!-- Collections Section -->
+    <section id="koleksi" class="collections">
+        <h2 class="section-title">Koleksi Eksklusif Kami</h2>
+        <p class="section-subtitle">Setiap perhiasan dirancang dengan keahlian dan cinta</p>
+
+        <div class="collections-grid">
+            <div class="collection-card">
+                <div class="icon">💍</div>
+                <h3>Cincin Berlian</h3>
+                <p>Cincin tunangan dan pernikahan dengan berlian asli bersertifikat, desain elegan untuk momen spesial Anda.</p>
+            </div>
+
+            <div class="collection-card">
+                <div class="icon">📿</div>
+                <h3>Kalung Emas</h3>
+                <p>Kalung emas 24K, 22K, dan 18K dengan berbagai desain klasik hingga modern yang mempesona.</p>
+            </div>
+
+            <div class="collection-card">
+                <div class="icon">✨</div>
+                <h3>Anting Mutiara</h3>
+                <p>Koleksi anting dengan mutiara air laut dan air tawar berkualitas premium dari berbagai belahan dunia.</p>
+            </div>
+
+            <div class="collection-card">
+                <div class="icon">🔗</div>
+                <h3>Gelang Eksklusif</h3>
+                <p>Gelang perak, emas, dan platinum dengan desain unik yang menambah keanggunan penampilan Anda.</p>
+            </div>
+
+            <div class="collection-card">
+                <div class="icon">⌚</div>
+                <h3>Jam Tangan Mewah</h3>
+                <p>Koleksi jam tangan luxury dari brand ternama dunia dengan garansi resmi dan kualitas terjamin.</p>
+            </div>
+
+            <div class="collection-card">
+                <div class="icon">🎨</div>
+                <h3>Custom Design</h3>
+                <p>Wujudkan perhiasan impian Anda dengan layanan custom design sesuai keinginan dan budget.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="tentang" class="features">
+        <h2 class="section-title">Mengapa Memilih LuxeGems?</h2>
+        <p class="section-subtitle">Kepercayaan dan kualitas adalah prioritas kami</p>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="icon">🏆</div>
+                <h3>Kualitas Terjamin</h3>
+                <p>Semua perhiasan menggunakan bahan premium dengan sertifikat keaslian internasional.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="icon">💎</div>
+                <h3>Berlian Bersertifikat</h3>
+                <p>Berlian asli dengan sertifikat GIA, IGI, atau AGS yang menjamin kualitas dan keaslian.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="icon">🎨</div>
+                <h3>Desain Eksklusif</h3>
+                <p>Koleksi desain unik dari desainer jewelry ternama dan layanan custom design.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="icon">🔒</div>
+                <h3>Garansi Seumur Hidup</h3>
+                <p>Garansi seumur hidup untuk perawatan, pembersihan, dan perbaikan perhiasan.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="icon">💳</div>
+                <h3>Cicilan 0%</h3>
+                <p>Kemudahan pembayaran dengan cicilan 0% hingga 12 bulan untuk berbagai bank.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="icon">🚚</div>
+                <h3>Pengiriman Aman</h3>
+                <p>Pengiriman dengan asuransi penuh dan packaging eksklusif anti rusak.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="kontak" class="contact">
+        <h2 class="section-title">Hubungi Kami</h2>
+        <p class="section-subtitle">Kami siap membantu Anda menemukan perhiasan impian</p>
+
+        <div class="contact-info">
+            <div class="contact-item">
+                <span class="icon">📱</span>
+                <a href="tel:+6281234567890">+62 812-3456-7890</a>
+            </div>
+
+            <div class="contact-item">
+                <span class="icon">📧</span>
+                <a href="mailto:info@luxegems.com">info@luxegems.com</a>
+            </div>
+
+            <div class="contact-item">
+                <span class="icon">💬</span>
+                <a href="https://wa.me/6281234567890" target="_blank">WhatsApp Chat</a>
+            </div>
+
+            <div class="contact-item">
+                <span class="icon">📍</span>
+                <span>Jl. Perhiasan Mewah No. 88, Jakarta Pusat</span>
+            </div>
+
+            <div class="contact-item">
+                <span class="icon">🕐</span>
+                <span>Senin - Sabtu: 10.00 - 20.00 WIB</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
     <footer>
         <p>Hak Cipta © 2024 <span class="footer-brand">LuxeGems</span>. All Rights Reserved.</p>
         <p style="margin-top: 0.5rem; font-size: 0.85rem;">Crafted with 💎 for timeless beauty</p>
     </footer>
 
     <script>
-        const searchInput = document.getElementById('searchInput');
-        const clearBtn = document.getElementById('clearBtn');
-        const searchForm = document.getElementById('searchForm');
-        const collectionsGrid = document.getElementById('collectionsGrid');
-        const collectionsTitle = document.getElementById('collectionsTitle');
-
-        const DEFAULT_COLLECTIONS = [
-            { query: 'cincin berlian', icon: '💍', text: 'Cincin Berlian' },
-            { query: 'kalung emas', icon: '📿', text: 'Kalung Emas' },
-            { query: 'anting mutiara', icon: '✨', text: 'Anting Mutiara' },
-            { query: 'gelang perak', icon: '🔗', text: 'Gelang Perak' },
-            { query: 'jam tangan mewah', icon: '⌚', text: 'Jam Mewah' },
-            { query: 'bros permata', icon: '💐', text: 'Bros Permata' },
-            { query: 'tiara mahkota', icon: '👑', text: 'Tiara' },
-            { query: 'custom jewelry', icon: '🎨', text: 'Custom' }
-        ];
-
-        const STORAGE_KEY = 'luxegems_recent_searches';
-        const MAX_RECENT = 8;
-        
-        const SUGGESTIONS = [
-            { text: 'cincin berlian solitaire', icon: '💍' },
-            { text: 'cincin tunangan emas putih', icon: '💍' },
-            { text: 'kalung emas 24 karat', icon: '📿' },
-            { text: 'kalung berlian', icon: '📿' },
-            { text: 'anting mutiara air tawar', icon: '✨' },
-            { text: 'anting drop diamond', icon: '✨' },
-            { text: 'gelang perak bali', icon: '🔗' },
-            { text: 'gelang charm emas', icon: '🔗' },
-            { text: 'jam tangan rolex', icon: '⌚' },
-            { text: 'jam cartier', icon: '⌚' },
-            { text: 'bros vintage', icon: '💐' },
-            { text: 'tiara wedding', icon: '👑' }
-        ];
-
-        const suggestionsDropdown = document.getElementById('suggestions');
-        let selectedSuggestionIndex = -1;
-
-        function sanitizeInput(input) {
-            const div = document.createElement('div');
-            div.textContent = input;
-            return div.innerHTML;
-        }
-
-        function getRecentSearches() {
-            try {
-                const stored = localStorage.getItem(STORAGE_KEY);
-                if (stored) {
-                    const parsed = JSON.parse(stored);
-                    return Array.isArray(parsed) ? parsed : [];
-                }
-            } catch (e) {
-                console.warn('LocalStorage error:', e);
-            }
-            return [];
-        }
-
-        function saveRecentSearch(query) {
-            try {
-                const sanitized = sanitizeInput(query.trim());
-                if (!sanitized || sanitized.length > 200) return;
-
-                let searches = getRecentSearches();
-                searches = searches.filter(s => s.query !== sanitized);
-                searches.unshift({
-                    query: sanitized,
-                    timestamp: Date.now()
-                });
-                searches = searches.slice(0, MAX_RECENT);
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(searches));
-                updateCollectionsDisplay();
-
-                if (typeof gtag !== 'undefined') {
-                    gtag('event', 'search', {
-                        'search_term': sanitized
-                    });
-                }
-            } catch (e) {
-                console.warn('Could not save to localStorage:', e);
-            }
-        }
-
-        function updateCollectionsDisplay() {
-            const searches = getRecentSearches();
-            
-            if (searches.length === 0) {
-                collectionsTitle.textContent = 'Koleksi Eksklusif';
-                renderCollectionItems(DEFAULT_COLLECTIONS.map(s => ({
-                    query: s.query,
-                    icon: s.icon,
-                    text: s.text
-                })));
-            } else {
-                collectionsTitle.textContent = 'Pencarian Terkini';
-                renderCollectionItems(searches.map(s => ({
-                    query: s.query,
-                    icon: '💎',
-                    text: s.query.length > 15 ? s.query.substring(0, 15) + '...' : s.query
-                })));
-            }
-        }
-
-        function renderCollectionItems(items) {
-            collectionsGrid.innerHTML = '';
-            
-            items.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'collection-item';
-                div.setAttribute('data-query', item.query);
-                div.setAttribute('role', 'button');
-                div.setAttribute('tabindex', '0');
-                div.innerHTML = `
-                    <div class="collection-icon">${item.icon}</div>
-                    <div class="collection-text">${sanitizeInput(item.text)}</div>
-                `;
-                
-                div.addEventListener('click', () => handleCollectionClick(item.query));
-                div.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        handleCollectionClick(item.query);
-                    }
-                });
-                
-                collectionsGrid.appendChild(div);
-            });
-        }
-
-        function handleCollectionClick(query) {
-            searchInput.value = query;
-            clearBtn.classList.add('visible');
-            searchInput.focus();
-            
-            if (typeof gtag !== 'undefined') {
-                gtag('event', 'click_collection', {
-                    'search_term': query
-                });
-            }
-        }
-
-        function showSuggestions(query) {
-            if (!query || query.length < 2) {
-                hideSuggestions();
-                return;
-            }
-
-            const filtered = SUGGESTIONS.filter(s => 
-                s.text.toLowerCase().includes(query.toLowerCase())
-            ).slice(0, 5);
-
-            if (filtered.length === 0) {
-                hideSuggestions();
-                return;
-            }
-
-            suggestionsDropdown.innerHTML = filtered.map((s, idx) => `
-                <div class="suggestion-item" data-index="${idx}" data-query="${sanitizeInput(s.text)}" role="option">
-                    <span class="suggestion-icon">${s.icon}</span>
-                    <span>${sanitizeInput(s.text)}</span>
-                </div>
-            `).join('');
-
-            suggestionsDropdown.classList.add('visible');
-            suggestionsDropdown.setAttribute('aria-hidden', 'false');
-            selectedSuggestionIndex = -1;
-
-            document.querySelectorAll('.suggestion-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    searchInput.value = item.dataset.query;
-                    hideSuggestions();
-                    searchInput.focus();
-                });
-            });
-        }
-
-        function hideSuggestions() {
-            suggestionsDropdown.classList.remove('visible');
-            suggestionsDropdown.setAttribute('aria-hidden', 'true');
-            selectedSuggestionIndex = -1;
-        }
-
-        searchInput.addEventListener('input', () => {
-            if (searchInput.value.length > 0) {
-                clearBtn.classList.add('visible');
-                showSuggestions(searchInput.value);
-            } else {
-                clearBtn.classList.remove('visible');
-                hideSuggestions();
-            }
-        });
-
-        searchInput.addEventListener('keydown', (e) => {
-            const items = suggestionsDropdown.querySelectorAll('.suggestion-item');
-            
-            if (e.key === 'ArrowDown') {
-                e.preventDefault();
-                selectedSuggestionIndex = Math.min(selectedSuggestionIndex + 1, items.length - 1);
-                updateSelectedSuggestion(items);
-            } else if (e.key === 'ArrowUp') {
-                e.preventDefault();
-                selectedSuggestionIndex = Math.max(selectedSuggestionIndex - 1, -1);
-                updateSelectedSuggestion(items);
-            } else if (e.key === 'Enter' && selectedSuggestionIndex >= 0) {
-                e.preventDefault();
-                searchInput.value = items[selectedSuggestionIndex].dataset.query;
-                hideSuggestions();
-                searchForm.dispatchEvent(new Event('submit'));
-            } else if (e.key === 'Escape') {
-                hideSuggestions();
-            }
-        });
-
-        function updateSelectedSuggestion(items) {
-            items.forEach((item, idx) => {
-                if (idx === selectedSuggestionIndex) {
-                    item.classList.add('active');
-                    item.scrollIntoView({ block: 'nearest' });
-                } else {
-                    item.classList.remove('active');
-                }
-            });
-        }
-
-        document.addEventListener('click', (e) => {
-            if (!searchInput.contains(e.target) && !suggestionsDropdown.contains(e.target)) {
-                hideSuggestions();
-            }
-        });
-
-        clearBtn.addEventListener('click', () => {
-            searchInput.value = '';
-            clearBtn.classList.remove('visible');
-            searchInput.focus();
-        });
-
-        searchForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const query = searchInput.value.trim();
-            
-            if (!query) {
-                searchInput.focus();
-                return;
-            }
-            
-            if (query.length > 200) {
-                alert('Pencarian terlalu panjang. Maksimal 200 karakter.');
-                return;
-            }
-            
-            saveRecentSearch(query);
-            window.location.href = `search.php?q=${encodeURIComponent(query)}`;
-        });
-
+        // Service Worker Registration
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js')
-                    .then(registration => console.log('SW registered'))
+                    .then(reg => console.log('SW registered'))
                     .catch(err => console.log('SW registration failed'));
             });
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            updateCollectionsDisplay();
-            searchInput.focus();
-
-            if (window.matchMedia('(display-mode: standalone)').matches) {
-                if (typeof gtag !== 'undefined') {
-                    gtag('event', 'pwa_installed');
+        // Smooth Scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
-            }
+            });
         });
 
-        window.addEventListener('storage', (e) => {
-            if (e.key === STORAGE_KEY) {
-                updateCollectionsDisplay();
-            }
-        });
+        // Track Events
+        if (typeof gtag !== 'undefined') {
+            document.querySelectorAll('.collection-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    gtag('event', 'view_collection', {
+                        'collection_name': this.querySelector('h3').textContent
+                    });
+                });
+            });
+        }
     </script>
 </body>
 </html>
