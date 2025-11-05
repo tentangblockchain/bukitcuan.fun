@@ -37,6 +37,13 @@
     <!-- Canonical URL -->
     <link rel="canonical" href="https://bukitcuan.fun/">
     
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="BukitCuan">
+    
     <!-- Google Analytics 4 -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=VITE_GA_MEASUREMENT_ID"></script>
     <script>
@@ -486,6 +493,54 @@
             }
         }
 
+        .suggestions-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 20px;
+            margin-top: 0.5rem;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .suggestions-dropdown.visible {
+            display: block;
+        }
+
+        .suggestion-item {
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-item:hover,
+        .suggestion-item.active {
+            background: rgba(20, 184, 166, 0.1);
+            color: var(--primary);
+        }
+
+        .suggestion-icon {
+            font-size: 1.2rem;
+        }
+
+        .search-container {
+            position: relative;
+        }
+
         @media (max-width: 480px) {
             .logo-text {
                 font-size: 2.2rem;
@@ -535,9 +590,12 @@
                         placeholder="Cari apa hari ini...?" 
                         autocomplete="off"
                         aria-label="Search query"
+                        aria-autocomplete="list"
+                        aria-controls="suggestions"
                         maxlength="200"
                         required
                     >
+                    <div id="suggestions" class="suggestions-dropdown" role="listbox" aria-hidden="true"></div>
                     <button type="button" class="clear-btn" id="clearBtn" aria-label="Clear search">×</button>
                     <button type="submit" class="search-btn">Cari</button>
                 </div>
@@ -608,6 +666,24 @@
 
         const STORAGE_KEY = 'bukitcuan_recent_searches';
         const MAX_RECENT = 8;
+        
+        const SUGGESTIONS = [
+            { text: 'crypto mining', icon: '⛏️' },
+            { text: 'bitcoin price', icon: '₿' },
+            { text: 'saham indonesia', icon: '🇮🇩' },
+            { text: 'forex trading strategy', icon: '📊' },
+            { text: 'investasi reksadana', icon: '💼' },
+            { text: 'NFT marketplace', icon: '🎨' },
+            { text: 'cara trading pemula', icon: '📚' },
+            { text: 'bisnis online 2024', icon: '🚀' },
+            { text: 'properti syariah', icon: '🕌' },
+            { text: 'passive income ideas', icon: '💡' },
+            { text: 'dividend stocks', icon: '💰' },
+            { text: 'cryptocurrency news', icon: '📰' }
+        ];
+
+        const suggestionsDropdown = document.getElementById('suggestions');
+        let selectedSuggestionIndex = -1;
 
         function sanitizeInput(input) {
             const div = document.createElement('div');
@@ -716,11 +792,92 @@
             }
         }
 
+        function showSuggestions(query) {
+            if (!query || query.length < 2) {
+                hideSuggestions();
+                return;
+            }
+
+            const filtered = SUGGESTIONS.filter(s => 
+                s.text.toLowerCase().includes(query.toLowerCase())
+            ).slice(0, 5);
+
+            if (filtered.length === 0) {
+                hideSuggestions();
+                return;
+            }
+
+            suggestionsDropdown.innerHTML = filtered.map((s, idx) => `
+                <div class="suggestion-item" data-index="${idx}" data-query="${sanitizeInput(s.text)}" role="option">
+                    <span class="suggestion-icon">${s.icon}</span>
+                    <span>${sanitizeInput(s.text)}</span>
+                </div>
+            `).join('');
+
+            suggestionsDropdown.classList.add('visible');
+            suggestionsDropdown.setAttribute('aria-hidden', 'false');
+            selectedSuggestionIndex = -1;
+
+            document.querySelectorAll('.suggestion-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    searchInput.value = item.dataset.query;
+                    hideSuggestions();
+                    searchInput.focus();
+                });
+            });
+        }
+
+        function hideSuggestions() {
+            suggestionsDropdown.classList.remove('visible');
+            suggestionsDropdown.setAttribute('aria-hidden', 'true');
+            selectedSuggestionIndex = -1;
+        }
+
         searchInput.addEventListener('input', () => {
             if (searchInput.value.length > 0) {
                 clearBtn.classList.add('visible');
+                showSuggestions(searchInput.value);
             } else {
                 clearBtn.classList.remove('visible');
+                hideSuggestions();
+            }
+        });
+
+        searchInput.addEventListener('keydown', (e) => {
+            const items = suggestionsDropdown.querySelectorAll('.suggestion-item');
+            
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                selectedSuggestionIndex = Math.min(selectedSuggestionIndex + 1, items.length - 1);
+                updateSelectedSuggestion(items);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                selectedSuggestionIndex = Math.max(selectedSuggestionIndex - 1, -1);
+                updateSelectedSuggestion(items);
+            } else if (e.key === 'Enter' && selectedSuggestionIndex >= 0) {
+                e.preventDefault();
+                searchInput.value = items[selectedSuggestionIndex].dataset.query;
+                hideSuggestions();
+                searchForm.dispatchEvent(new Event('submit'));
+            } else if (e.key === 'Escape') {
+                hideSuggestions();
+            }
+        });
+
+        function updateSelectedSuggestion(items) {
+            items.forEach((item, idx) => {
+                if (idx === selectedSuggestionIndex) {
+                    item.classList.add('active');
+                    item.scrollIntoView({ block: 'nearest' });
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!searchInput.contains(e.target) && !suggestionsDropdown.contains(e.target)) {
+                hideSuggestions();
             }
         });
 
@@ -749,10 +906,24 @@
             window.location.href = `search.php?q=${encodeURIComponent(query)}`;
         });
 
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => console.log('SW registered'))
+                    .catch(err => console.log('SW registration failed'));
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             updateRecentSearchesDisplay();
             
             searchInput.focus();
+
+            if (window.matchMedia('(display-mode: standalone)').matches) {
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'pwa_installed');
+                }
+            }
         });
 
         window.addEventListener('storage', (e) => {

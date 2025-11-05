@@ -334,11 +334,18 @@ $page_title = 'Mencari: ' . $query_display . ' - BukitCuan';
         </noscript>
     </div>
 
+    <script src="/ab-test.js"></script>
     <script>
         (function() {
             'use strict';
             
             const googleUrl = <?php echo json_encode($google_url, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
+            const abTest = new ABTest();
+            const redirectDelay = abTest.getRedirectDelay();
+            
+            abTest.trackEvent('search_page_loaded', {
+                'search_term': <?php echo json_encode($query_raw, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>
+            });
             
             function openSearchResults() {
                 try {
@@ -369,7 +376,14 @@ $page_title = 'Mencari: ' . $query_display . ' - BukitCuan';
                 }
             }
             
-            setTimeout(openSearchResults, 1200);
+            setTimeout(openSearchResults, redirectDelay);
+            
+            window.addEventListener('beforeunload', () => {
+                abTest.trackEvent('page_exit', {
+                    'time_on_page': Date.now() - performance.timing.navigationStart
+                });
+                abTest.sendBeacon();
+            });
             
             document.getElementById('manualLink').addEventListener('click', function() {
                 if (typeof gtag !== 'undefined') {

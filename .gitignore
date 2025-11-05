@@ -32,3 +32,7 @@ Thumbs.db
 *.cache
 
 attached_assets/
+
+# Logs
+logs/
+api/logs/
