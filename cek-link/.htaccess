@@ -1,0 +1,29 @@
+
+# Security Headers
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "DENY"
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule>
+
+# Block access to sensitive files and folders
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Block access to cek-link directory
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^cek-link/ - [F,L]
+</IfModule>
+
+# Prevent directory listing
+Options -Indexes
+
+# Protect private folder
+<IfModule mod_authz_core.c>
+    <DirectoryMatch "private">
+        Require all denied
+    </DirectoryMatch>
+</IfModule>
