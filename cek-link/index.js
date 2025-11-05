@@ -2204,6 +2204,12 @@ bot.on('callback_query', authorize, async (ctx) => {
     } else if (data.startsWith('checkall_page_')) {
       const page = parseInt(data.replace('checkall_page_', ''));
 
+      // CRITICAL: Try to load cache from file if memory cache is empty (after reboot)
+      if (!checkAllCache.results || checkAllCache.results.length === 0) {
+        logger.debug('⚠️ Memory cache empty, attempting to load from file...');
+        loadCheckAllCache();
+      }
+
       if (checkAllCache.results && checkAllCache.results.length > 0) {
         const config = loadConfig();
         const websites = Object.entries(config.websites);
@@ -2218,7 +2224,8 @@ bot.on('callback_query', authorize, async (ctx) => {
           await ctx.answerCbQuery('⚠️ Pesan sudah tidak valid, gunakan !checkall lagi');
         }
       } else {
-        await ctx.answerCbQuery('🔄 Memuat data...');
+        // Cache benar-benar tidak ada atau expired
+        await ctx.answerCbQuery('🔄 Cache expired, checking fresh data...');
         await handleCheckAllCommand(ctx, page);
       }
     } else if (data === 'checkall_refresh') {
