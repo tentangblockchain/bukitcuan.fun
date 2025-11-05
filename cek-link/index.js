@@ -389,28 +389,56 @@ const saveCheckAllCache = () => {
 // Load checkAll cache from file on startup
 const loadCheckAllCache = () => {
   try {
-    if (!fs.existsSync(CACHE_FILE_PATH)) {
-      return false;
+    // Try loading from checkall_cache.json first
+    if (fs.existsSync(CACHE_FILE_PATH)) {
+      const raw = fs.readFileSync(CACHE_FILE_PATH, 'utf-8');
+      const cacheData = JSON.parse(raw);
+
+      const now = Date.now();
+      const cacheAge = now - cacheData.timestamp;
+
+      if (cacheAge <= CACHE_EXPIRY) {
+        checkAllCache.results = cacheData.results;
+        checkAllCache.timestamp = cacheData.timestamp;
+
+        const ageSeconds = Math.round(cacheAge / 1000);
+        logger.info(`✅ Loaded checkAll cache from checkall_cache.json (${ageSeconds}s old, ${cacheData.results.length} results)`);
+        return true;
+      } else {
+        logger.debug('⚠️ checkall_cache.json expired, trying check_results.json...');
+        fs.unlinkSync(CACHE_FILE_PATH);
+      }
     }
 
-    const raw = fs.readFileSync(CACHE_FILE_PATH, 'utf-8');
-    const cacheData = JSON.parse(raw);
+    // FALLBACK: Load from check_results.json if checkall_cache.json not available
+    if (fs.existsSync(CHECK_RESULTS_PATH)) {
+      logger.debug('📂 Loading from check_results.json as fallback...');
+      const raw = fs.readFileSync(CHECK_RESULTS_PATH, 'utf-8');
+      const resultsData = JSON.parse(raw);
 
-    const now = Date.now();
-    const cacheAge = now - cacheData.timestamp;
+      // Convert check_results.json format to cache format
+      if (resultsData.results && typeof resultsData.results === 'object') {
+        const resultsArray = Object.entries(resultsData.results).map(([name, data]) => ({
+          name,
+          url: data.url,
+          status: data.status,
+          statusCode: data.statusCode,
+          responseTime: data.responseTime,
+          timestamp: data.timestamp,
+          error: data.error || null
+        }));
 
-    if (cacheAge > CACHE_EXPIRY) {
-      logger.debug('⚠️ Cache expired, skipping load');
-      fs.unlinkSync(CACHE_FILE_PATH);
-      return false;
+        checkAllCache.results = resultsArray;
+        checkAllCache.timestamp = Date.now(); // Use current time since check_results.json doesn't store cache timestamp
+
+        logger.info(`✅ Loaded ${resultsArray.length} results from check_results.json (fallback)`);
+        return true;
+      }
     }
 
-    checkAllCache.results = cacheData.results;
-    checkAllCache.timestamp = cacheData.timestamp;
+    logger.debug('⚠️ No valid cache found in checkall_cache.json or check_results.json');
+    return false;
 
-    const ageSeconds = Math.round(cacheAge / 1000);
-    logger.info(`✅ Loaded checkAll cache from file (${ageSeconds}s old, ${cacheData.results.length} results)`);
-    return true;
   } catch (error) {
     logger.debug(`⚠️ Could not load cache: ${error.message}`);
 
