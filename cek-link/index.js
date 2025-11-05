@@ -1904,8 +1904,13 @@ const handleCheckAllCommand = async (ctx, page = 1, forceRecheck = false) => {
       checkAllCache.results = results;
       checkAllCache.timestamp = now;
 
-      // Save cache to file for persistence
-      saveCheckAllCache();
+      // CRITICAL: Save cache to dedicated file for pagination persistence
+      const cacheSaved = saveCheckAllCache();
+      if (cacheSaved) {
+        logger.debug(`💾 Cache saved to ${CACHE_FILE_PATH} (${results.length} results)`);
+      } else {
+        logger.warn('⚠️ Failed to save cache file, pagination may reset on restart');
+      }
 
       // Completion message
       try {
@@ -2780,8 +2785,11 @@ const startAutomaticChecker = () => {
       checkAllCache.results = results;
       checkAllCache.timestamp = Date.now();
 
-      // Save cache to file for persistence
-      saveCheckAllCache();
+      // CRITICAL: Save cache to dedicated file for pagination persistence
+      const cacheSaved = saveCheckAllCache();
+      if (cacheSaved) {
+        logger.debug(`💾 Auto-check cache saved to ${CACHE_FILE_PATH} (${results.length} results)`);
+      }
 
       // Send alert for issues
       const issueResults = results.filter(r => r.status !== 'up');
